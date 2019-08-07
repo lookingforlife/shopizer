@@ -1,17 +1,18 @@
 package com.salesmanager.shop.admin.controller.merchant;
 
-
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.salesmanager.core.business.services.content.ContentService;
 import com.salesmanager.core.business.services.merchant.MerchantStoreService;
 import com.salesmanager.core.business.services.reference.country.CountryService;
@@ -41,52 +43,50 @@ import com.salesmanager.shop.constants.Constants;
 
 @Controller
 public class StoreBrandingController {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(StoreBrandingController.class);
-	
-	
-	@Inject
+
+	@Autowired
 	MerchantStoreService merchantStoreService;
-	
-	@Inject
+
+	@Autowired
 	CountryService countryService;
-	
-	@Inject
+
+	@Autowired
 	ZoneService zoneService;
-	
-	@Inject
+
+	@Autowired
 	LanguageService languageService;
-	
-	@Inject
+
+	@Autowired
 	CurrencyService currencyService;
-	
-	@Inject
+
+	@Autowired
 	private ContentService contentService;
-	
 
-	@Resource(name="templates")
+	@Resource(name = "templates")
 	List<String> templates;
-	
+
 	@PreAuthorize("hasRole('STORE')")
-	@RequestMapping(value="/admin/store/storeBranding.html", method=RequestMethod.GET)
-	public String displayStoreBranding(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		setMenu(model,request);
+	@RequestMapping(value = "/admin/store/storeBranding.html", method = RequestMethod.GET)
+	public String displayStoreBranding(Model model, HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
 
-		MerchantStore store = (MerchantStore)request.getAttribute(Constants.ADMIN_STORE);
-		
-		//display templates
+		setMenu(model, request);
+
+		MerchantStore store = (MerchantStore) request.getAttribute(Constants.ADMIN_STORE);
+
+		// display templates
 		model.addAttribute("templates", templates);
-		
-		model.addAttribute("store", store);
-		
 
-		
+		model.addAttribute("store", store);
+
 		return "admin-store-branding";
 	}
-	
+
 	/**
 	 * https://spring.io/guides/gs/uploading-files/
+	 * 
 	 * @param contentImages
 	 * @param result
 	 * @param model
@@ -96,113 +96,112 @@ public class StoreBrandingController {
 	 * @throws Exception
 	 */
 	@PreAuthorize("hasRole('STORE')")
-	@RequestMapping(value="/admin/store/saveBranding.html", method=RequestMethod.POST)
-	public String saveStoreBranding(@RequestParam("file") MultipartFile file, Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		setMenu(model,request);
+	@RequestMapping(value = "/admin/store/saveBranding.html", method = RequestMethod.POST)
+	public String saveStoreBranding(@RequestParam("file") MultipartFile file, Model model, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
 
-		MerchantStore store = (MerchantStore)request.getAttribute(Constants.ADMIN_STORE);
-		
+		setMenu(model, request);
+
+		MerchantStore store = (MerchantStore) request.getAttribute(Constants.ADMIN_STORE);
+
 		model.addAttribute("templates", templates);
-		
-		
+
 		model.addAttribute("store", store);
 
-		if(file!=null) {
+		if (file != null) {
 
 			String imageName = file.getOriginalFilename();
 			InputStream inputStream = file.getInputStream();
 			String mimeType = file.getContentType();
-			
-            InputContentFile cmsContentImage = new InputContentFile();
-            cmsContentImage.setFileName(imageName);
-            cmsContentImage.setMimeType(mimeType);
-            cmsContentImage.setFile( inputStream );
-            contentService.addLogo(store.getCode(), cmsContentImage);
-			
-            //Update store
-            store.setStoreLogo(imageName);
-            merchantStoreService.update(store);
-            request.getSession().setAttribute(Constants.ADMIN_STORE, store);
+
+			InputContentFile cmsContentImage = new InputContentFile();
+			cmsContentImage.setFileName(imageName);
+			cmsContentImage.setMimeType(mimeType);
+			cmsContentImage.setFile(inputStream);
+			contentService.addLogo(store.getCode(), cmsContentImage);
+
+			// Update store
+			store.setStoreLogo(imageName);
+			// merchantStoreService.update(store);
+			merchantStoreService.saveOrUpdate(store);
+			request.getSession().setAttribute(Constants.ADMIN_STORE, store);
 
 		} else {
-			model.addAttribute("error","error");
+			model.addAttribute("error", "error");
 			return "admin-store-branding";
 		}
 
-		model.addAttribute("success","success");
+		model.addAttribute("success", "success");
 		return "admin-store-branding";
 	}
-	
-	@PreAuthorize("hasRole('STORE')")
-	@RequestMapping(value="/admin/store/saveTemplate.html", method=RequestMethod.POST)
-	public String saveTemplate(@ModelAttribute(value="store") final MerchantStore store, BindingResult result, Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		setMenu(model,request);
 
-		MerchantStore sessionstore = (MerchantStore)request.getAttribute(Constants.ADMIN_STORE);
-		
+	@PreAuthorize("hasRole('STORE')")
+	@RequestMapping(value = "/admin/store/saveTemplate.html", method = RequestMethod.POST)
+	public String saveTemplate(@ModelAttribute(value = "store") final MerchantStore store, BindingResult result,
+			Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+		setMenu(model, request);
+
+		MerchantStore sessionstore = (MerchantStore) request.getAttribute(Constants.ADMIN_STORE);
+
 		sessionstore.setStoreTemplate(store.getStoreTemplate());
-		
+
 		merchantStoreService.saveOrUpdate(sessionstore);
-		
-		request.setAttribute(Constants.ADMIN_STORE, sessionstore);		
-		
-		//display templates
+
+		request.setAttribute(Constants.ADMIN_STORE, sessionstore);
+
+		// display templates
 		model.addAttribute("templates", templates);
 
-		model.addAttribute("success","success");
+		model.addAttribute("success", "success");
 		model.addAttribute("store", sessionstore);
 
 		return "admin-store-branding";
 	}
-	
-	@PreAuthorize("hasRole('STORE')")
-	@RequestMapping(value="/admin/store/removeImage.html", method=RequestMethod.POST)
-	public @ResponseBody ResponseEntity<String> removeImage(HttpServletRequest request, HttpServletResponse response, Locale locale) {
 
-		MerchantStore store = (MerchantStore)request.getAttribute(Constants.ADMIN_STORE);
-		
+	@PreAuthorize("hasRole('STORE')")
+	@RequestMapping(value = "/admin/store/removeImage.html", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<String> removeImage(HttpServletRequest request, HttpServletResponse response,
+			Locale locale) {
+
+		MerchantStore store = (MerchantStore) request.getAttribute(Constants.ADMIN_STORE);
+
 		AjaxResponse resp = new AjaxResponse();
 
 		try {
-			
 
-			
 			contentService.removeFile(store.getCode(), FileContentType.LOGO, store.getStoreLogo());
-			
+
 			store.setStoreLogo(null);
 			merchantStoreService.update(store);
-		
-		
+
 		} catch (Exception e) {
 			LOGGER.error("Error while deleting product", e);
 			resp.setStatus(AjaxResponse.RESPONSE_STATUS_FAIURE);
 			resp.setErrorMessage(e);
 		}
-		
+
 		String returnString = resp.toJSONString();
-		final HttpHeaders httpHeaders= new HttpHeaders();
-	    httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
-		return new ResponseEntity<String>(returnString,httpHeaders,HttpStatus.OK);
+		final HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		return new ResponseEntity<String>(returnString, httpHeaders, HttpStatus.OK);
 	}
-	
+
 	private void setMenu(Model model, HttpServletRequest request) throws Exception {
-		
-		//display menu
-		Map<String,String> activeMenus = new HashMap<String,String>();
+
+		// display menu
+		Map<String, String> activeMenus = new HashMap<String, String>();
 		activeMenus.put("store", "store");
 		activeMenus.put("storeBranding", "storeBranding");
 
-		
 		@SuppressWarnings("unchecked")
-		Map<String, Menu> menus = (Map<String, Menu>)request.getAttribute("MENUMAP");
-		
-		Menu currentMenu = (Menu)menus.get("store");
-		model.addAttribute("currentMenu",currentMenu);
-		model.addAttribute("activeMenus",activeMenus);
+		Map<String, Menu> menus = (Map<String, Menu>) request.getAttribute("MENUMAP");
+
+		Menu currentMenu = (Menu) menus.get("store");
+		model.addAttribute("currentMenu", currentMenu);
+		model.addAttribute("activeMenus", activeMenus);
 		//
-		
+
 	}
 
 }

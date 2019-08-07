@@ -1,27 +1,28 @@
 package com.salesmanager.shop.store.controller.system;
 
+import static com.salesmanager.shop.constants.Constants.KEY_FACEBOOK_PAGE_URL;
+import static com.salesmanager.shop.constants.Constants.KEY_GOOGLE_ANALYTICS_URL;
+import static com.salesmanager.shop.constants.Constants.KEY_INSTAGRAM_URL;
+import static com.salesmanager.shop.constants.Constants.KEY_PINTEREST_PAGE_URL;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.system.MerchantConfigurationService;
 import com.salesmanager.core.model.merchant.MerchantStore;
 import com.salesmanager.core.model.reference.language.Language;
 import com.salesmanager.core.model.system.MerchantConfig;
 import com.salesmanager.core.model.system.MerchantConfiguration;
-import com.salesmanager.shop.constants.Constants;
 import com.salesmanager.shop.model.system.Configs;
 import com.salesmanager.shop.store.api.exception.ServiceRuntimeException;
-import java.util.Optional;
-import javax.inject.Inject;
-import org.springframework.stereotype.Service;
-
-import static com.salesmanager.shop.constants.Constants.KEY_FACEBOOK_PAGE_URL;
-import static com.salesmanager.shop.constants.Constants.KEY_GOOGLE_ANALYTICS_URL;
-import static com.salesmanager.shop.constants.Constants.KEY_INSTAGRAM_URL;
-import static com.salesmanager.shop.constants.Constants.KEY_PINTEREST_PAGE_URL;
 
 @Service
 public class MerchantConfigurationFacadeImpl implements MerchantConfigurationFacade {
 
-  @Inject
+  @Autowired
   private MerchantConfigurationService merchantConfigurationService;
 
   @Override

@@ -2,8 +2,7 @@ package com.salesmanager.core.business.services.tax;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.exception.ServiceException;
@@ -18,7 +17,7 @@ public class TaxClassServiceImpl extends SalesManagerEntityServiceImpl<Long, Tax
 
 	private TaxClassRepository taxClassRepository;
 	
-	@Inject
+	@Autowired
 	public TaxClassServiceImpl(TaxClassRepository taxClassRepository) {
 		super(taxClassRepository);
 		

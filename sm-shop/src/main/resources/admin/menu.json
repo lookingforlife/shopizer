@@ -11,20 +11,17 @@
 "menu":{
 "code":"store", 
 "icon":"icon-file",
-"url":"/admin/store/store.html", 
+"url":"/admin/store/list.html", 
 "role":"STORE",
 "order":1,
 "menus":[
 	{"menu":{"code":"storeDetails","url":"/admin/store/store.html","role":"STORE","order":0, "menus":
 		[
 			{"menu":{
-				"code":"storeDetails","url":"/admin/store/store.html","role":"STORE","order":0
+				"code":"store-list","url":"/admin/store/list.html","role":"SUPERADMIN","order":1
 			}},
 			{"menu":{
 				"code":"create-store","url":"/admin/store/createStore.html","role":"SUPERADMIN","order":1
-			}},
-			{"menu":{
-				"code":"store-list","url":"/admin/store/list.html","role":"SUPERADMIN","order":1
 			}}
 		]
 	}},
@@ -36,7 +33,7 @@
 "menu":{
 "code":"profile", 
 "icon":"icon-info-sign",
-"url":"/admin/users/displayUser.html", 
+"url":"/admin/users/list.html", 
 "role":"AUTH",
 "order":2,
 "menus":[
@@ -44,16 +41,10 @@
 		"code":"user","url":"","role":"AUTH","order":0,"menus":
 		[
 			{"menu":{
-				"code":"myprofile","url":"/admin/user/profile.html","role":"AUTH","order":0
+				"code":"users","url":"/admin/users/list.html","role":"ADMIN","order":0
 			}},
 			{"menu":{
-				"code":"change-password","url":"/admin/user/password.html","role":"AUTH","order":1
-			}},
-			{"menu":{
-				"code":"users","url":"","role":"ADMIN","order":2
-			}},
-			{"menu":{
-				"code":"create-user","url":"","role":"ADMIN","order":3
+				"code":"create-user","url":"/admin/users/createUser.html","role":"ADMIN","order":1
 			}}
 		]
 		
@@ -62,10 +53,10 @@
 		"code":"security","url":"","role":"ADMIN","order":1,"menus":
 		[
 			{"menu":{
-				"code":"security-groups","url":"/admin/user/groups.html","role":"ADMIN","order":1
+				"code":"security-groups","url":"/admin/user/groups.html","role":"ADMIN","order":0
 			}},
 			{"menu":{
-				"code":"security-create-group","url":"/admin/groups/new.html","role":"ADMIN","order":2
+				"code":"security-create-group","url":"/admin/groups/new.html","role":"ADMIN","order":1
 			}}
 		]
 	}}
@@ -83,21 +74,22 @@
 		"code":"catalogue-products","url":"","role":"PRODUCTS","order":0,"menus":
 		[
 			{"menu":{
-				"code":"catalogue-products-create","url":"/admin/products/createProduct.html","role":"PRODUCTS","order":0
+				"code":"catalogue","url":"/admin/products/products.html","role":"PRODUCTS","order":0
 			}},
 			{"menu":{
-				"code":"catalogue","url":"/admin/products/products.html","role":"PRODUCTS","order":2
+				"code":"catalogue-products-create","url":"/admin/products/createProduct.html","role":"PRODUCTS","order":1
 			}}
+			
 		]
 	}},
 	{"menu":{
 		"code":"catalogue-categories","url":"","role":"PRODUCTS","order":1,"menus":
-		[
+		[	
 			{"menu":{
-				"code":"catalogue-categories-create","url":"/admin/categories/createCategory.html","role":"PRODUCTS","order":0
+				"code":"catalogue-categories-list","url":"/admin/categories/categories.html","role":"PRODUCTS","order":0
 			}},
 			{"menu":{
-				"code":"catalogue-categories-list","url":"/admin/categories/categories.html","role":"PRODUCTS","order":1
+				"code":"catalogue-categories-create","url":"/admin/categories/createCategory.html","role":"PRODUCTS","order":1
 			}},
 			{"menu":{
 				"code":"catalogue-categories-hierarchy","url":"/admin/categories/hierarchy.html","role":"PRODUCTS","order":2

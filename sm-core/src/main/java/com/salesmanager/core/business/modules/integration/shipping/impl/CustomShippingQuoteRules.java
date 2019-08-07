@@ -2,21 +2,17 @@ package com.salesmanager.core.business.modules.integration.shipping.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.drools.KnowledgeBase;
-import org.drools.runtime.StatelessKnowledgeSession;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.salesmanager.core.model.common.Delivery;
 import com.salesmanager.core.model.merchant.MerchantStore;
@@ -44,7 +40,7 @@ public class CustomShippingQuoteRules implements ShippingQuoteModule {
 	
 	//private KnowledgeBase kbase;
 	
-	@Inject
+	@Autowired
 	KieContainer kieShippingCustomContainer;
 
 	@Override
@@ -123,7 +119,7 @@ public class CustomShippingQuoteRules implements ShippingQuoteModule {
 		inputParameters.setProvince("*");
 		inputParameters.setModuleName(module.getCode());
 		
-		if(delivery.getZone().getCode()!=null) {
+		if(delivery.getZone()!=null && delivery.getZone().getCode()!=null) {
 			inputParameters.setProvince(delivery.getZone().getCode());
 		}
 		

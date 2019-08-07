@@ -1,12 +1,12 @@
 package com.salesmanager.shop.store.api.v0.system;
 
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +30,7 @@ public class SystemRESTController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SystemRESTController.class);
 	
-	@Inject
+	@Autowired
 	private ModuleConfigurationService moduleConfigurationService;
 	
 	/**

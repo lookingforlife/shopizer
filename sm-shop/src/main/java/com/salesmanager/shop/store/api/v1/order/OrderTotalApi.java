@@ -1,17 +1,15 @@
 package com.salesmanager.shop.store.api.v1.order;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,177 +35,168 @@ import com.salesmanager.shop.store.controller.shoppingCart.facade.ShoppingCartFa
 import com.salesmanager.shop.store.controller.store.facade.StoreFacade;
 import com.salesmanager.shop.utils.LabelUtils;
 import com.salesmanager.shop.utils.LanguageUtils;
+
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
 @RequestMapping("/api/v1")
 public class OrderTotalApi {
 
-  @Inject private StoreFacade storeFacade;
+	@Autowired
+	private StoreFacade storeFacade;
 
-  @Inject private LanguageUtils languageUtils;
+	@Autowired
+	private LanguageUtils languageUtils;
 
-  @Inject private ShoppingCartFacade shoppingCartFacade;
+	@Autowired
+	private ShoppingCartFacade shoppingCartFacade;
 
-  @Inject private LabelUtils messages;
+	@Autowired
+	private LabelUtils messages;
 
-  @Inject private PricingService pricingService;
+	@Autowired
+	private PricingService pricingService;
 
-  @Inject private CustomerService customerService;
+	@Autowired
+	private CustomerService customerService;
 
-  @Inject private ShippingQuoteService shippingQuoteService;
+	@Autowired
+	private ShippingQuoteService shippingQuoteService;
 
-  @Inject private OrderService orderService;
+	@Autowired
+	private OrderService orderService;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(OrderTotalApi.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OrderTotalApi.class);
 
-  /**
-   * This service calculates order total for a given shopping cart This method takes in
-   * consideration any applicable sales tax An optional request parameter accepts a quote id that
-   * was received using shipping api
-   *
-   * @param quote
-   * @param request
-   * @param response
-   * @return
-   * @throws Exception
-   */
-  @RequestMapping(
-      value = {"/auth/cart/{code}/payment"},
-      method = RequestMethod.GET)
-  @ResponseBody
-  @ApiImplicitParams({
-      @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
-      @ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en")
-  })
-  public ReadableOrderTotalSummary payment(
-      @PathVariable final String code,
-      @RequestParam(value = "quote", required = false) Long quote,
-      @ApiIgnore MerchantStore merchantStore,
-      @ApiIgnore Language language,
-      HttpServletRequest request,
-      HttpServletResponse response) {
+	/**
+	 * This service calculates order total for a given shopping cart This method
+	 * takes in consideration any applicable sales tax An optional request parameter
+	 * accepts a quote id that was received using shipping api
+	 *
+	 * @param quote
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = { "/auth/cart/{code}/payment" }, method = RequestMethod.GET)
+	@ResponseBody
+	@ApiImplicitParams({ @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
+			@ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
+	public ReadableOrderTotalSummary payment(@PathVariable final String code,
+			@RequestParam(value = "quote", required = false) Long quote, @ApiIgnore MerchantStore merchantStore,
+			@ApiIgnore Language language, HttpServletRequest request, HttpServletResponse response) {
 
-    try {
-      Principal principal = request.getUserPrincipal();
-      String userName = principal.getName();
+		try {
+			Principal principal = request.getUserPrincipal();
+			String userName = principal.getName();
 
-      Customer customer = customerService.getByNick(userName);
+			Customer customer = customerService.getByNick(userName);
 
-      if (customer == null) {
-        response.sendError(503, "Error while getting user details to calculate shipping quote");
-      }
+			if (customer == null) {
+				response.sendError(503, "Error while getting user details to calculate shipping quote");
+			}
 
-      ShoppingCart shoppingCart = shoppingCartFacade.getShoppingCartModel(code, merchantStore);
+			ShoppingCart shoppingCart = shoppingCartFacade.getShoppingCartModel(code, merchantStore);
 
-      if (shoppingCart == null) {
-        response.sendError(404, "Cart code " + code + " does not exist");
-        return null;
-      }
+			if (shoppingCart == null) {
+				response.sendError(404, "Cart code " + code + " does not exist");
+				return null;
+			}
 
-      if (shoppingCart.getCustomerId() == null) {
-        response.sendError(
-            404, "Cart code " + code + " does not exist for exist for user " + userName);
-        return null;
-      }
+			if (shoppingCart.getCustomerId() == null) {
+				response.sendError(404, "Cart code " + code + " does not exist for exist for user " + userName);
+				return null;
+			}
 
-      if (shoppingCart.getCustomerId().longValue() != customer.getId().longValue()) {
-        response.sendError(
-            404, "Cart code " + code + " does not exist for exist for user " + userName);
-        return null;
-      }
+			if (shoppingCart.getCustomerId().longValue() != customer.getId().longValue()) {
+				response.sendError(404, "Cart code " + code + " does not exist for exist for user " + userName);
+				return null;
+			}
 
-      ShippingSummary shippingSummary = null;
+			ShippingSummary shippingSummary = null;
 
-      // get shipping quote if asked for
-      if (quote != null) {
-        shippingSummary = shippingQuoteService.getShippingSummary(quote, merchantStore);
-      }
+			// get shipping quote if asked for
+			if (quote != null) {
+				shippingSummary = shippingQuoteService.getShippingSummary(quote, merchantStore);
+			}
 
-      OrderTotalSummary orderTotalSummary = null;
+			OrderTotalSummary orderTotalSummary = null;
 
-      OrderSummary orderSummary = new OrderSummary();
-      orderSummary.setShippingSummary(shippingSummary);
-      List<ShoppingCartItem> itemsSet =
-          new ArrayList<ShoppingCartItem>(shoppingCart.getLineItems());
-      orderSummary.setProducts(itemsSet);
+			OrderSummary orderSummary = new OrderSummary();
+			orderSummary.setShippingSummary(shippingSummary);
+			List<ShoppingCartItem> itemsSet = new ArrayList<ShoppingCartItem>(shoppingCart.getLineItems());
+			orderSummary.setProducts(itemsSet);
 
-      orderTotalSummary =
-          orderService.caculateOrderTotal(orderSummary, customer, merchantStore, language);
+			orderTotalSummary = orderService.caculateOrderTotal(orderSummary, customer, merchantStore, language);
 
-      ReadableOrderTotalSummary returnSummary = new ReadableOrderTotalSummary();
-      ReadableOrderSummaryPopulator populator = new ReadableOrderSummaryPopulator();
-      populator.setMessages(messages);
-      populator.setPricingService(pricingService);
-      populator.populate(orderTotalSummary, returnSummary, merchantStore, language);
+			ReadableOrderTotalSummary returnSummary = new ReadableOrderTotalSummary();
+			ReadableOrderSummaryPopulator populator = new ReadableOrderSummaryPopulator();
+			populator.setMessages(messages);
+			populator.setPricingService(pricingService);
+			populator.populate(orderTotalSummary, returnSummary, merchantStore, language);
 
-      return returnSummary;
+			return returnSummary;
 
-    } catch (Exception e) {
-      LOGGER.error("Error while calculating order summary", e);
-      try {
-        response.sendError(503, "Error while calculating order summary " + e.getMessage());
-      } catch (Exception ignore) {
-      }
-      return null;
-    }
-  }
+		} catch (Exception e) {
+			LOGGER.error("Error while calculating order summary", e);
+			try {
+				response.sendError(503, "Error while calculating order summary " + e.getMessage());
+			} catch (Exception ignore) {
+			}
+			return null;
+		}
+	}
 
-  @RequestMapping(
-      value = {"/cart/{code}/payment"},
-      method = RequestMethod.GET)
-  @ResponseBody
-  @ApiImplicitParams({
-      @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
-      @ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en")
-  })
-  public ReadableOrderTotalSummary calculatePayment(
-      @PathVariable final String code,
-      @RequestParam(value = "quote", required = false) Long quote,
-      @ApiIgnore MerchantStore merchantStore,
-      @ApiIgnore Language language,
-      HttpServletResponse response) {
+	@RequestMapping(value = { "/cart/{code}/payment" }, method = RequestMethod.GET)
+	@ResponseBody
+	@ApiImplicitParams({ @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
+			@ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
+	public ReadableOrderTotalSummary calculatePayment(@PathVariable final String code,
+			@RequestParam(value = "quote", required = false) Long quote, @ApiIgnore MerchantStore merchantStore,
+			@ApiIgnore Language language, HttpServletResponse response) {
 
-    try {
-      ShoppingCart shoppingCart = shoppingCartFacade.getShoppingCartModel(code, merchantStore);
+		try {
+			ShoppingCart shoppingCart = shoppingCartFacade.getShoppingCartModel(code, merchantStore);
 
-      if (shoppingCart == null) {
-        response.sendError(404, "Cart code " + code + " does not exist");
-        return null;
-      }
+			if (shoppingCart == null) {
+				response.sendError(404, "Cart code " + code + " does not exist");
+				return null;
+			}
 
-      ShippingSummary shippingSummary = null;
+			ShippingSummary shippingSummary = null;
 
-      // get shipping quote if asked for
-      if (quote != null) {
-        shippingSummary = shippingQuoteService.getShippingSummary(quote, merchantStore);
-      }
+			// get shipping quote if asked for
+			if (quote != null) {
+				shippingSummary = shippingQuoteService.getShippingSummary(quote, merchantStore);
+			}
 
-      OrderTotalSummary orderTotalSummary = null;
+			OrderTotalSummary orderTotalSummary = null;
 
-      OrderSummary orderSummary = new OrderSummary();
-      orderSummary.setShippingSummary(shippingSummary);
-      List<ShoppingCartItem> itemsSet =
-          new ArrayList<ShoppingCartItem>(shoppingCart.getLineItems());
-      orderSummary.setProducts(itemsSet);
+			OrderSummary orderSummary = new OrderSummary();
+			orderSummary.setShippingSummary(shippingSummary);
+			List<ShoppingCartItem> itemsSet = new ArrayList<ShoppingCartItem>(shoppingCart.getLineItems());
+			orderSummary.setProducts(itemsSet);
 
-      orderTotalSummary = orderService.caculateOrderTotal(orderSummary, merchantStore, language);
+			orderTotalSummary = orderService.caculateOrderTotal(orderSummary, merchantStore, language);
 
-      ReadableOrderTotalSummary returnSummary = new ReadableOrderTotalSummary();
-      ReadableOrderSummaryPopulator populator = new ReadableOrderSummaryPopulator();
-      populator.setMessages(messages);
-      populator.setPricingService(pricingService);
-      populator.populate(orderTotalSummary, returnSummary, merchantStore, language);
+			ReadableOrderTotalSummary returnSummary = new ReadableOrderTotalSummary();
+			ReadableOrderSummaryPopulator populator = new ReadableOrderSummaryPopulator();
+			populator.setMessages(messages);
+			populator.setPricingService(pricingService);
+			populator.populate(orderTotalSummary, returnSummary, merchantStore, language);
 
-      return returnSummary;
+			return returnSummary;
 
-    } catch (Exception e) {
-      LOGGER.error("Error while calculating order summary", e);
-      try {
-        response.sendError(503, "Error while calculating order summary " + e.getMessage());
-      } catch (Exception ignore) {
-      }
-      return null;
-    }
-  }
+		} catch (Exception e) {
+			LOGGER.error("Error while calculating order summary", e);
+			try {
+				response.sendError(503, "Error while calculating order summary " + e.getMessage());
+			} catch (Exception ignore) {
+			}
+			return null;
+		}
+	}
 }

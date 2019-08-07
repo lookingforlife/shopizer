@@ -164,11 +164,7 @@ public class CmsStaticContentFileManagerImpl
         final Node<String, Object> merchantNode = this.getNode(nodePath);
         merchantNode.put(inputStaticContentData.getFileName(),
             IOUtils.toByteArray(inputStaticContentData.getFile()));
-
-
       }
-
-
 
       LOGGER.info("Total {} files added successfully.", inputStaticContentDataList.size());
 

@@ -172,4 +172,6 @@ public interface CustomerFacade
       Language language);
 
 	PersistableCustomerReview updateCustomerReview(Long id, Long reviewId, PersistableCustomerReview review, MerchantStore store, Language language);
+	
+	Customer getCustomer(Long reviewId);
 }

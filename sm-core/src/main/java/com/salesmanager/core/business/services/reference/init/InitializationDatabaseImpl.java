@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,61 +48,55 @@ import com.salesmanager.core.model.tax.taxclass.TaxClass;
 
 @Service("initializationDatabase")
 public class InitializationDatabaseImpl implements InitializationDatabase {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(InitializationDatabaseImpl.class);
-	
 
-	
-
-	
-	@Inject
+	@Autowired
 	private ZoneService zoneService;
-	
-	@Inject
-	private LanguageService languageService;
-	
-	@Inject
-	private CountryService countryService;
-	
-	@Inject
-	private CurrencyService currencyService;
-	
-	@Inject
-	protected MerchantStoreService merchantService;
-		
-	@Inject
-	protected ProductTypeService productTypeService;
-	
-	@Inject
-	private TaxClassService taxClassService;
-	
-	@Inject
-	private ZonesLoader zonesLoader;
-	
-	@Inject
-	private IntegrationModulesLoader modulesLoader;
-	
-	@Inject
-	private ManufacturerService manufacturerService;
-	
-	@Inject
-	private ModuleConfigurationService moduleConfigurationService;
-	
-	@Inject
-	private OptinService optinService;
-	
 
-	
+	@Autowired
+	private LanguageService languageService;
+
+	@Autowired
+	private CountryService countryService;
+
+	@Autowired
+	private CurrencyService currencyService;
+
+	@Autowired
+	protected MerchantStoreService merchantService;
+
+	@Autowired
+	protected ProductTypeService productTypeService;
+
+	@Autowired
+	private TaxClassService taxClassService;
+
+	@Autowired
+	private ZonesLoader zonesLoader;
+
+	@Autowired
+	private IntegrationModulesLoader modulesLoader;
+
+	@Autowired
+	private ManufacturerService manufacturerService;
+
+	@Autowired
+	private ModuleConfigurationService moduleConfigurationService;
+
+	@Autowired
+	private OptinService optinService;
+
 	private String name;
-	
+
 	public boolean isEmpty() {
 		return languageService.count() == 0;
 	}
-	
+
 	@Transactional
 	public void populate(String contextName) throws ServiceException {
-		this.name =  contextName;
-		
+		this.name = contextName;
+
 		createLanguages();
 		createCountries();
 		createZones();
@@ -110,112 +105,110 @@ public class InitializationDatabaseImpl implements InitializationDatabase {
 		createModules();
 		createMerchant();
 
-
 	}
-	
-
 
 	private void createCurrencies() throws ServiceException {
 		LOGGER.info(String.format("%s : Populating Currencies ", name));
 
 		for (String code : SchemaConstant.CURRENCY_MAP.keySet()) {
-  
-            try {
-            	java.util.Currency c = java.util.Currency.getInstance(code);
-            	
-            	if(c==null) {
-            		LOGGER.info(String.format("%s : Populating Currencies : no currency for code : %s", name, code));
-            	}
-            	
-            		//check if it exist
-            		
-	            	Currency currency = new Currency();
-	            	currency.setName(c.getCurrencyCode());
-	            	currency.setCurrency(c);
-	            	currencyService.create(currency);
 
-            //System.out.println(l.getCountry() + "   " + c.getSymbol() + "  " + c.getSymbol(l));
-            } catch (IllegalArgumentException e) {
-            	LOGGER.info(String.format("%s : Populating Currencies : no currency for code : %s", name, code));
-            }
-        }  
+			try {
+				java.util.Currency c = java.util.Currency.getInstance(code);
+
+				if (c == null) {
+					LOGGER.info(String.format("%s : Populating Currencies : no currency for code : %s", name, code));
+				}
+
+				// check if it exist
+
+				Currency currency = new Currency();
+				currency.setName(c.getCurrencyCode());
+				currency.setCurrency(c);
+				currencyService.create(currency);
+
+				// System.out.println(l.getCountry() + " " + c.getSymbol() + " " +
+				// c.getSymbol(l));
+			} catch (IllegalArgumentException e) {
+				LOGGER.info(String.format("%s : Populating Currencies : no currency for code : %s", name, code));
+			}
+		}
 	}
 
 	private void createCountries() throws ServiceException {
 		LOGGER.info(String.format("%s : Populating Countries ", name));
 		List<Language> languages = languageService.list();
-		for(String code : SchemaConstant.COUNTRY_ISO_CODE) {
+		for (String code : SchemaConstant.COUNTRY_ISO_CODE) {
 			Locale locale = SchemaConstant.LOCALES.get(code);
 			if (locale != null) {
 				Country country = new Country(code);
 				countryService.create(country);
-				
+
 				for (Language language : languages) {
 					String name = locale.getDisplayCountry(new Locale(language.getCode()));
-					//byte[] ptext = value.getBytes(Constants.ISO_8859_1); 
-					//String name = new String(ptext, Constants.UTF_8); 
+					// byte[] ptext = value.getBytes(Constants.ISO_8859_1);
+					// String name = new String(ptext, Constants.UTF_8);
 					CountryDescription description = new CountryDescription(language, name);
 					countryService.addCountryDescription(country, description);
 				}
 			}
 		}
 	}
-	
+
 	private void createZones() throws ServiceException {
 		LOGGER.info(String.format("%s : Populating Zones ", name));
-        try {
+		try {
 
-    		  Map<String,Zone> zonesMap = new HashMap<String,Zone>();
-    		  zonesMap = zonesLoader.loadZones("reference/zoneconfig.json");
-              
-              for (Map.Entry<String, Zone> entry : zonesMap.entrySet()) {
-            	    String key = entry.getKey();
-            	    Zone value = entry.getValue();
-            	    if(value.getDescriptions()==null) {
-            	    	LOGGER.warn("This zone " + key + " has no descriptions");
-            	    	continue;
-            	    }
-            	    
-            	    List<ZoneDescription> zoneDescriptions = value.getDescriptions();
-            	    value.setDescriptons(null);
+			Map<String, Zone> zonesMap = new HashMap<String, Zone>();
+			zonesMap = zonesLoader.loadZones("reference/zoneconfig.json");
 
-            	    zoneService.create(value);
-            	    
-            	    for(ZoneDescription description : zoneDescriptions) {
-            	    	description.setZone(value);
-            	    	zoneService.addDescription(value, description);
-            	    }
-              }
+			for (Map.Entry<String, Zone> entry : zonesMap.entrySet()) {
+				String key = entry.getKey();
+				Zone value = entry.getValue();
+				if (value.getDescriptions() == null) {
+					LOGGER.warn("This zone " + key + " has no descriptions");
+					continue;
+				}
 
-  		} catch (Exception e) {
-  		    
-  			throw new ServiceException(e);
-  		}
+				List<ZoneDescription> zoneDescriptions = value.getDescriptions();
+				value.setDescriptons(null);
+
+				zoneService.create(value);
+
+				for (ZoneDescription description : zoneDescriptions) {
+					description.setZone(value);
+					zoneService.addDescription(value, description);
+				}
+			}
+
+		} catch (Exception e) {
+
+			throw new ServiceException(e);
+		}
 
 	}
 
 	private void createLanguages() throws ServiceException {
 		LOGGER.info(String.format("%s : Populating Languages ", name));
-		for(String code : SchemaConstant.LANGUAGE_ISO_CODE) {
+		for (String code : SchemaConstant.LANGUAGE_ISO_CODE) {
 			Language language = new Language(code);
 			languageService.create(language);
 		}
 	}
-	
+
 	private void createMerchant() throws ServiceException {
 		LOGGER.info(String.format("%s : Creating merchant ", name));
-		
+
 		Date date = new Date(System.currentTimeMillis());
-		
+
 		Language en = languageService.getByCode("en");
 		Country ca = countryService.getByCode("CA");
 		Currency currency = currencyService.getByCode("CAD");
 		Zone qc = zoneService.getByCode("QC");
-		
+
 		List<Language> supportedLanguages = new ArrayList<Language>();
 		supportedLanguages.add(en);
-		
-		//create a merchant
+
+		// create a merchant
 		MerchantStore store = new MerchantStore();
 		store.setCountry(ca);
 		store.setCurrency(currency);
@@ -232,72 +225,59 @@ public class InitializationDatabaseImpl implements InitializationDatabase {
 		store.setDomainName("localhost:8080");
 		store.setStoreTemplate("generic");
 		store.setLanguages(supportedLanguages);
-		
+
 		merchantService.create(store);
-		
-		
+
 		TaxClass taxclass = new TaxClass(TaxClass.DEFAULT_TAX_CLASS);
 		taxclass.setMerchantStore(store);
-		
+
 		taxClassService.create(taxclass);
-		
-		//create default manufacturer
+
+		// create default manufacturer
 		Manufacturer defaultManufacturer = new Manufacturer();
 		defaultManufacturer.setCode("DEFAULT");
 		defaultManufacturer.setMerchantStore(store);
-		
+
 		ManufacturerDescription manufacturerDescription = new ManufacturerDescription();
 		manufacturerDescription.setLanguage(en);
 		manufacturerDescription.setName("DEFAULT");
 		manufacturerDescription.setManufacturer(defaultManufacturer);
 		manufacturerDescription.setDescription("DEFAULT");
 		defaultManufacturer.getDescriptions().add(manufacturerDescription);
-		
+
 		manufacturerService.create(defaultManufacturer);
-		
-	   Optin newsletter = new Optin();
-	   newsletter.setCode(OptinType.NEWSLETTER.name());
-	   newsletter.setMerchant(store);
-	   newsletter.setOptinType(OptinType.NEWSLETTER);
-	   optinService.create(newsletter);
-		
-		
+
+		Optin newsletter = new Optin();
+		newsletter.setCode(OptinType.NEWSLETTER.name());
+		newsletter.setMerchant(store);
+		newsletter.setOptinType(OptinType.NEWSLETTER);
+		optinService.create(newsletter);
+
 	}
 
 	private void createModules() throws ServiceException {
-		
+
 		try {
-			
+
 			List<IntegrationModule> modules = modulesLoader.loadIntegrationModules("reference/integrationmodules.json");
-            for (IntegrationModule entry : modules) {
-        	    moduleConfigurationService.create(entry);
-          }
-			
-			
+			for (IntegrationModule entry : modules) {
+				moduleConfigurationService.create(entry);
+			}
+
 		} catch (Exception e) {
 			throw new ServiceException(e);
 		}
-		
-		
+
 	}
-	
+
 	private void createSubReferences() throws ServiceException {
-		
+
 		LOGGER.info(String.format("%s : Loading catalog sub references ", name));
-		
-		
+
 		ProductType productType = new ProductType();
 		productType.setCode(ProductType.GENERAL_TYPE);
 		productTypeService.create(productType);
 
-
-		
-		
 	}
-	
-
-	
-
-
 
 }

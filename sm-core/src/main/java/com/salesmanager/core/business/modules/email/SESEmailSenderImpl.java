@@ -3,6 +3,7 @@ package com.salesmanager.core.business.modules.email;
 import java.io.StringWriter;
 import javax.inject.Inject;
 import org.jsoup.helper.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ import freemarker.template.TemplateException;
 @Component("sesEmailSender")
 public class SESEmailSenderImpl implements EmailModule {
 
-  @Inject
+	@Autowired
   private Configuration freemarkerMailConfiguration;
   
   @Value("${config.emailSender.region}")

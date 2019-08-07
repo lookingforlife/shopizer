@@ -2,6 +2,7 @@ package com.salesmanager.core.business.services.catalog.product.type;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.exception.ServiceException;
@@ -15,7 +16,7 @@ public class ProductTypeServiceImpl extends SalesManagerEntityServiceImpl<Long, 
 
 	private ProductTypeRepository productTypeRepository;
 	
-	@Inject
+	@Autowired
 	public ProductTypeServiceImpl(
 			ProductTypeRepository productTypeRepository) {
 			super(productTypeRepository);

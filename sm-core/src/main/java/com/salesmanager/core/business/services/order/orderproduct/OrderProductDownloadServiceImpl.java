@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.repositories.order.orderproduct.OrderProductDownloadRepository;
@@ -23,7 +24,7 @@ public class OrderProductDownloadServiceImpl  extends SalesManagerEntityServiceI
 
     private final OrderProductDownloadRepository orderProductDownloadRepository;
 
-    @Inject
+    @Autowired
     public OrderProductDownloadServiceImpl(OrderProductDownloadRepository orderProductDownloadRepository) {
         super(orderProductDownloadRepository);
         this.orderProductDownloadRepository = orderProductDownloadRepository;

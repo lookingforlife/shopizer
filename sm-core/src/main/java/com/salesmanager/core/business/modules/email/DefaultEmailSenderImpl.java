@@ -16,6 +16,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -28,10 +30,10 @@ import freemarker.template.TemplateException;
 @Component("defaultEmailSender")
 public class DefaultEmailSenderImpl implements EmailModule {
 
-  @Inject
+	@Autowired
   private Configuration freemarkerMailConfiguration;
   
-  @Inject
+	@Autowired
   private JavaMailSender mailSender;
 
   private static final String CHARSET = "UTF-8";

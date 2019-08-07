@@ -63,27 +63,18 @@
 						<s:message code="message.success" text="Request successfull" />
 					</div>
 					
-
-				
 					<!-- hidden when creating the product -->
 					<div class="control-group">
 						<label><s:message code="label.storelogo" text="Store logo"/>&nbsp;<c:if test="${store.storeLogo!=null}"><span id="imageControlRemove"> - <a href="#" onClick="removeImage('${store.id}')"><s:message code="label.generic.remove" text="Remove"/></a></span></c:if></label>
 						<div class="controls" id="imageControl">
-						
-									   <c:choose>
-				                        		<c:when test="${empty store.storeLogo}">
-				                                    <input class="input-file" name="file" type="file"><br/>
-				                                </c:when>
-				                                <c:otherwise>
-				                                	<img src="<c:url value=""/><sm:contentImage imageName="${store.storeLogo}" imageType="LOGO"/>">
-				                                </c:otherwise>
-			                            </c:choose>
-										
-						
-							
-								
-
-						
+						   <c:choose>
+	                        		<c:when test="${empty store.storeLogo}">
+	                                    <input class="input-file" name="file" type="file"><br/>
+	                                </c:when>
+	                                <c:otherwise>
+	                                	<img src="<c:url value=""/><sm:contentImage imageName="${store.storeLogo}" imageType="LOGO"/>">
+	                                </c:otherwise>
+                            </c:choose>
 						</div>
 					</div>
 					<div class="form-actions">

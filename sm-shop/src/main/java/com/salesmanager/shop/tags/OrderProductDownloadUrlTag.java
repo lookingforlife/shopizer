@@ -1,11 +1,11 @@
 package com.salesmanager.shop.tags;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.tags.RequestContextAwareTag;
@@ -31,7 +31,7 @@ public class OrderProductDownloadUrlTag extends RequestContextAwareTag {
 	
 	private Long orderId;
 	
-	@Inject
+	@Autowired
 	private FilePathUtils filePathUtils;
 
 

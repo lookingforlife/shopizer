@@ -2,6 +2,7 @@ package com.salesmanager.core.business.services.catalog.product.availability;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.exception.ServiceException;
@@ -17,7 +18,7 @@ public class ProductAvailabilityServiceImpl extends
 	
 	private ProductAvailabilityRepository productAvailabilityRepository;
 	
-	@Inject
+	@Autowired
 	public ProductAvailabilityServiceImpl(
 			ProductAvailabilityRepository productAvailabilityRepository) {
 			super(productAvailabilityRepository);

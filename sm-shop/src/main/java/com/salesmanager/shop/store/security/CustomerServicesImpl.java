@@ -2,12 +2,10 @@ package com.salesmanager.shop.store.security;
 
 import java.util.Collection;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -29,17 +27,9 @@ public class CustomerServicesImpl extends AbstractCustomerServices{
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerServicesImpl.class);
 	
-
-	private CustomerService customerService;
-	private PermissionService  permissionService;
-	private GroupService   groupService;
-	
-	@Inject
+	@Autowired
 	public CustomerServicesImpl(CustomerService customerService, PermissionService permissionService, GroupService groupService) {
 		super(customerService, permissionService, groupService);
-		this.customerService = customerService;
-		this.permissionService = permissionService;
-		this.groupService = groupService;
 	}
 	
 	@Override

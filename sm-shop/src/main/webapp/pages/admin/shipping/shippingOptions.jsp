@@ -88,97 +88,64 @@ $(document).ready(function() {
 	});
 	
 });	
-
 </script>
 
-
 <div class="tabbable">
-
   					
- 					<jsp:include page="/common/adminTabs.jsp" />
-  					
-  					 <div class="tab-content">
-  					
-  					
-  					<div class="tab-pane active" id="shipping-options">
-
-
-								<div class="sm-ui-component">
-								<h3><s:message code="label.shipping.options" text="Shipping options" /></h3>	
-								<br/>
-								
-
-							<c:url var="saveShippingOptions" value="/admin/shipping/saveShippingOptions.html"/>
-							<form:form method="POST" commandName="configuration" action="${saveShippingOptions}">
-
-      							
-      								<form:errors path="*" cssClass="alert alert-error" element="div" />
-									<div id="store.success" class="alert alert-success" style="<c:choose><c:when test="${success!=null}">display:block;</c:when><c:otherwise>display:none;</c:otherwise></c:choose>"><s:message code="message.success" text="Request successfull"/></div>    
-								
-									<!--
+		<jsp:include page="/common/adminTabs.jsp" />
+		<div class="tab-content">
+  			<div class="tab-pane active" id="shipping-options">
+				<div class="sm-ui-component">
+					<h3><s:message code="label.shipping.options" text="Shipping options" /></h3>	
+					<br/>
+					<c:url var="saveShippingOptions" value="/admin/shipping/saveShippingOptions.html"/>
+					<form:form method="POST" commandName="configuration" action="${saveShippingOptions}">
+      					<form:errors path="*" cssClass="alert alert-error" element="div" />
+							<div id="store.success" class="alert alert-success" style="<c:choose><c:when test="${success!=null}">display:block;</c:when><c:otherwise>display:none;</c:otherwise></c:choose>"><s:message code="message.success" text="Request successfull"/>
+							</div>    
+							<!--
 									<div class="control-group">
                         				<label><s:message code="label.shipping.taxonshipping" text="Apply tax on shipping" /></label>
                         				<div class="controls">
                                     		<form:checkbox id="taxOnShipping" path="taxOnShipping" />
                         				</div>
                   					</div>
-                  					-->
-
-                  					<div class="control-group well">
-                        				<label><s:message code="label.shipping.freeshippingandhandling=" text="Apply free shipping and handling"/></label>
-                        				<div class="controls">
-                                    		<form:checkbox id="freeShippingEnabled" path="freeShippingEnabled" /><br/>
-                                    		<form:radiobutton id="shipFreeType" path="shipFreeType" value="NATIONAL"/>&nbsp;<s:message code="label.shipping.national" text="National" /><br/>			
-											<form:radiobutton id="shipFreeType" path="shipFreeType" value="INTERNATIONAL"/>&nbsp;<s:message code="label.generic.all" text="All" /><br/>
-											<form:input cssClass="input-large" id="orderTotalFreeShippingText" path="orderTotalFreeShippingText" />&nbsp;<s:message code="label.shipping.freeshippingamount" text="Order total over" />
-                        				</div>
-                        				<span id="help-orderTotalFreeShippingText" class="help-inline"><form:errors path="orderTotalFreeShippingText" cssClass="error" /></span>
-                  					</div>
-                  					
-                  					<div class="control-group">
-                        				<label><s:message code="label.shipping.handlingfees" text="Handling fees"/></label>
-                        				<div class="controls">
-											<form:input cssClass="input-large" id="handlingFeesText" path="handlingFeesText" />
-                        				</div>
-	                                	<span id="help-handlingFeesText" class="help-inline"><form:errors path="handlingFeesText" cssClass="error" /></span>
-	                        		</div>
-	                        		
-	                        		<div class="control-group">
-                        				<div class="controls">
-											<form:radiobutton id="shipOptionPriceType" path="shipOptionPriceType" value="ALL"/>&nbsp;<s:message code="label.shipping.allquotes" text="All quotes" /><br/>			
-											<form:radiobutton id="shipOptionPriceType" path="shipOptionPriceType" value="LEAST"/>&nbsp;<s:message code="label.shipping.leastexpensivequotes" text="Least expensive" /><br/>
-											<form:radiobutton id="shipOptionPriceType" path="shipOptionPriceType" value="HIGHEST"/>&nbsp;<s:message code="label.shipping.moreexpensivequotes" text="Highest price" />
-                        				</div>
-	                                	<span class="help-inline"><form:errors path="handlingFeesText" cssClass="error" /></span>
-	                        		</div>
-
-	                        		<div class="form-actions">
-                  						<div class="pull-right">
-                  							<button type="submit" class="btn btn-success"><s:message code="button.label.submit" text="Submit"/></button>
-                  						</div>
-            	 					</div>
-					                  
-
-            	 			</form:form>
-							
-							
-
-
-      					</div>
-      					
-
-      			     
-      			     
-
-
-      			     
-      			     
-    
-
-
-   					</div>
-
-
-  					</div>
-
-				</div>
+                  			-->
+                  			<div class="control-group well">
+                        		<label><s:message code="label.shipping.freeshippingandhandling=" text="Apply free shipping and handling"/></label>
+                        		<div class="controls">
+                                	<form:checkbox id="freeShippingEnabled" path="freeShippingEnabled" /><br/>
+                                    <form:radiobutton id="shipFreeType" path="shipFreeType" value="NATIONAL"/>&nbsp;<s:message code="label.shipping.national" text="National" /><br/>			
+									<form:radiobutton id="shipFreeType" path="shipFreeType" value="INTERNATIONAL"/>&nbsp;<s:message code="label.generic.all" text="All" /><br/>
+									<form:input cssClass="input-large" id="orderTotalFreeShippingText" path="orderTotalFreeShippingText" />&nbsp;<s:message code="label.shipping.freeshippingamount" text="Order total over" />
+                        		</div>
+                        		<span id="help-orderTotalFreeShippingText" class="help-inline"><form:errors path="orderTotalFreeShippingText" cssClass="error" />
+                        		</span>
+                  			</div>
+                  			<div class="control-group">
+                        		<label><s:message code="label.shipping.handlingfees" text="Handling fees"/></label>
+                        		<div class="controls">
+									<form:input cssClass="input-large" id="handlingFeesText" path="handlingFeesText" />
+                        		</div>
+	                            <span id="help-handlingFeesText" class="help-inline"><form:errors path="handlingFeesText" cssClass="error" />
+	                            </span>
+	                        </div>
+	                        <div class="control-group">
+                        		<div class="controls">
+									<form:radiobutton id="shipOptionPriceType" path="shipOptionPriceType" value="ALL"/>&nbsp;<s:message code="label.shipping.allquotes" text="All quotes" /><br/>			
+									<form:radiobutton id="shipOptionPriceType" path="shipOptionPriceType" value="LEAST"/>&nbsp;<s:message code="label.shipping.leastexpensivequotes" text="Least expensive" /><br/>
+									<form:radiobutton id="shipOptionPriceType" path="shipOptionPriceType" value="HIGHEST"/>&nbsp;<s:message code="label.shipping.moreexpensivequotes" text="Highest price" />
+                        		</div>
+	                            <span class="help-inline"><form:errors path="handlingFeesText" cssClass="error" />
+	                            </span>
+	                        </div>
+	                        <div class="form-actions">
+                  				<div class="pull-right">
+                  					<button type="submit" class="btn btn-success"><s:message code="button.label.submit" text="Submit"/></button>
+                  				</div>
+            	 			</div>
+            	 		</form:form>
+      				</div>
+   				</div>
+  			</div>
+		</div>

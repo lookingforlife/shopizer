@@ -1,6 +1,8 @@
 package com.salesmanager.core.business.services.catalog.product.file;
 
 import javax.inject.Inject;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import com.salesmanager.core.business.exception.ServiceException;
@@ -18,16 +20,16 @@ import com.salesmanager.core.model.merchant.MerchantStore;
 public class DigitalProductServiceImpl extends SalesManagerEntityServiceImpl<Long, DigitalProduct> 
 	implements DigitalProductService {
 	
-
+	
 	private DigitalProductRepository digitalProductRepository;
 	
-    @Inject
+	@Autowired
     StaticContentFileManager productDownloadsFileManager;
     
-    @Inject
+	@Autowired
     ProductService productService;
 
-	@Inject
+	@Autowired
 	public DigitalProductServiceImpl(DigitalProductRepository digitalProductRepository) {
 		super(digitalProductRepository);
 		this.digitalProductRepository = digitalProductRepository;

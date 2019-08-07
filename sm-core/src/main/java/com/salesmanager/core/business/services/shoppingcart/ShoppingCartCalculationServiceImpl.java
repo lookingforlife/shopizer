@@ -3,11 +3,10 @@
  */
 package com.salesmanager.core.business.services.shoppingcart;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.exception.ServiceException;
@@ -35,23 +34,23 @@ public class ShoppingCartCalculationServiceImpl implements ShoppingCartCalculati
 
 	protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
-	@Inject
+	@Autowired
 	private ShoppingCartService shoppingCartService;
 
-	@Inject
+	@Autowired
 	private OrderService orderService;
 
 	/**
 	 * <p>
-	 * Method used to recalculate state of shopping cart every time any change
-	 * has been made to underlying {@link ShoppingCart} object in DB.
+	 * Method used to recalculate state of shopping cart every time any change has
+	 * been made to underlying {@link ShoppingCart} object in DB.
 	 * </p>
 	 * Following operations will be performed by this method.
 	 *
 	 * <li>Calculate price for each {@link ShoppingCartItem} and update it.</li>
 	 * <p>
-	 * This method is backbone method for all price calculation related to
-	 * shopping cart.
+	 * This method is backbone method for all price calculation related to shopping
+	 * cart.
 	 * </p>
 	 *
 	 * @see OrderServiceImpl
@@ -79,15 +78,15 @@ public class ShoppingCartCalculationServiceImpl implements ShoppingCartCalculati
 
 	/**
 	 * <p>
-	 * Method used to recalculate state of shopping cart every time any change
-	 * has been made to underlying {@link ShoppingCart} object in DB.
+	 * Method used to recalculate state of shopping cart every time any change has
+	 * been made to underlying {@link ShoppingCart} object in DB.
 	 * </p>
 	 * Following operations will be performed by this method.
 	 *
 	 * <li>Calculate price for each {@link ShoppingCartItem} and update it.</li>
 	 * <p>
-	 * This method is backbone method for all price calculation related to
-	 * shopping cart.
+	 * This method is backbone method for all price calculation related to shopping
+	 * cart.
 	 * </p>
 	 *
 	 * @see OrderServiceImpl

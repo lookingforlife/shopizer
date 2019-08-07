@@ -20,7 +20,9 @@
 
 					<div class="box">
 						<span class="box-title">
-						<p><s:message code="label.store.information" text="Store information" /></p>
+							<p>
+								<s:message code="label.store.information" text="Store information" />
+							</p>
 						</span>
 						
 						<p>

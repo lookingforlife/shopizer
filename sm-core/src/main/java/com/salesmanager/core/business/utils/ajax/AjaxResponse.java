@@ -7,8 +7,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
+
 
 public class AjaxResponse implements JSONAware {
 	
@@ -19,6 +21,7 @@ public class AjaxResponse implements JSONAware {
 	public final static int CODE_ALREADY_EXIST=9998;
 	
 	private int status;
+	private int totalRows;
 	private List<Map<String,String>> data = new ArrayList<Map<String,String>>();
 	private Map<String,String> dataMap = new HashMap<String,String>();
 	private Map<String,String> validationMessages = new HashMap<String,String>();
@@ -70,6 +73,14 @@ public class AjaxResponse implements JSONAware {
 		this.statusMessage = statusMessage;
 	}
 	
+	public int getTotalRows() {
+		return totalRows;
+	}
+	
+	public void setTotalRows(int totalRows) {
+		this.totalRows = totalRows;
+	}
+	
 	
 	protected String getJsonInfo() {
 		
@@ -78,6 +89,7 @@ public class AjaxResponse implements JSONAware {
 		returnString.append("\"response\"").append(":");
 		returnString.append("{");
 		returnString.append("\"status\"").append(":").append(this.getStatus());
+		returnString.append(",").append("\"totalRows\"").append(":").append(this.totalRows);
 		if(this.getStatusMessage()!=null && this.getStatus()!=0) {
 			returnString.append(",").append("\"statusMessage\"").append(":\"").append(JSONObject.escape(this.getStatusMessage())).append("\"");
 		}
@@ -173,9 +185,35 @@ public class AjaxResponse implements JSONAware {
 
 		
 		return returnString.toString();
-
 		
 	}
+	
+	public JSONObject toJsonObject() {
+		JSONObject root = new JSONObject();
+		
+		JSONObject response = new JSONObject();
+		response.put("status", 0);
+		response.put("totalRows", this.data.size());
+		JSONArray arr = new JSONArray();
+		int index = 0;
+		for(Map keyValue : this.getData()) {
+			
+			JSONObject data = new JSONObject();
+			
+			Set<String> keys = keyValue.keySet();
+			for(String key : keys) {
+				data.put(key, keyValue.get(key));
+			}
+			arr.add(data);
+		}
+		response.put("data", arr);
+		
+		root.put("response", response);
+		return root;
+	}
+	
+	
+	
 	public Map<String,String> getDataMap() {
 		return dataMap;
 	}

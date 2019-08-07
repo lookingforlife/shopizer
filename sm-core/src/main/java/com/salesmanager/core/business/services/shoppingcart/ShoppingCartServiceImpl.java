@@ -5,13 +5,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.inject.Inject;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.repositories.shoppingcart.ShoppingCartAttributeRepository;
 import com.salesmanager.core.business.repositories.shoppingcart.ShoppingCartItemRepository;
@@ -36,26 +38,24 @@ public class ShoppingCartServiceImpl extends SalesManagerEntityServiceImpl<Long,
 
 	private ShoppingCartRepository shoppingCartRepository;
 
-	@Inject
+	@Autowired
 	private ProductService productService;
 
-	@Inject
+	@Autowired
 	private ShoppingCartItemRepository shoppingCartItemRepository;
-	
-	@Inject
+
+	@Autowired
 	private ShoppingCartAttributeRepository shoppingCartAttributeItemRepository;
-	
-	@Inject
+
+	@Autowired
 	private PricingService pricingService;
 
-	@Inject
+	@Autowired
 	private ProductAttributeService productAttributeService;
-	
-
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ShoppingCartServiceImpl.class);
 
-	@Inject
+	@Autowired
 	public ShoppingCartServiceImpl(ShoppingCartRepository shoppingCartRepository) {
 		super(shoppingCartRepository);
 		this.shoppingCartRepository = shoppingCartRepository;
@@ -99,9 +99,9 @@ public class ShoppingCartServiceImpl extends SalesManagerEntityServiceImpl<Long,
 	}
 
 	/**
-	 * Get a {@link ShoppingCart} for a given id and MerchantStore. Will update
-	 * the shopping cart prices and items based on the actual inventory. This
-	 * method will remove the shopping cart if no items are attached.
+	 * Get a {@link ShoppingCart} for a given id and MerchantStore. Will update the
+	 * shopping cart prices and items based on the actual inventory. This method
+	 * will remove the shopping cart if no items are attached.
 	 */
 	@Override
 	@Transactional
@@ -129,8 +129,8 @@ public class ShoppingCartServiceImpl extends SalesManagerEntityServiceImpl<Long,
 
 	/**
 	 * Get a {@link ShoppingCart} for a given id. Will update the shopping cart
-	 * prices and items based on the actual inventory. This method will remove
-	 * the shopping cart if no items are attached.
+	 * prices and items based on the actual inventory. This method will remove the
+	 * shopping cart if no items are attached.
 	 */
 	@Override
 	@Transactional
@@ -158,9 +158,9 @@ public class ShoppingCartServiceImpl extends SalesManagerEntityServiceImpl<Long,
 	}
 
 	/**
-	 * Get a {@link ShoppingCart} for a given code. Will update the shopping
-	 * cart prices and items based on the actual inventory. This method will
-	 * remove the shopping cart if no items are attached.
+	 * Get a {@link ShoppingCart} for a given code. Will update the shopping cart
+	 * prices and items based on the actual inventory. This method will remove the
+	 * shopping cart if no items are attached.
 	 */
 	@Override
 	@Transactional
@@ -240,25 +240,24 @@ public class ShoppingCartServiceImpl extends SalesManagerEntityServiceImpl<Long,
 					LOGGER.debug("Obsolete item ? " + item.isObsolete());
 					if (item.isObsolete()) {
 						cartIsObsolete = true;
-					} 
+					}
 				}
 
 				// shoppingCart.setLineItems(shoppingCartItems);
 				boolean refreshCart = false;
 				Set<ShoppingCartItem> refreshedItems = new HashSet<ShoppingCartItem>();
 				for (ShoppingCartItem item : items) {
-/*					if (!item.isObsolete()) {
-						refreshedItems.add(item);
-					} else {
-						refreshCart = true;
-					}*/
+					/*
+					 * if (!item.isObsolete()) { refreshedItems.add(item); } else { refreshCart =
+					 * true; }
+					 */
 					refreshedItems.add(item);
 				}
 
-				//if (refreshCart) {
-					shoppingCart.setLineItems(refreshedItems);
-				    update(shoppingCart);
-				//}
+				// if (refreshCart) {
+				shoppingCart.setLineItems(refreshedItems);
+				update(shoppingCart);
+				// }
 
 				if (cartIsObsolete) {
 					shoppingCart.setObsolete(true);
@@ -330,43 +329,48 @@ public class ShoppingCartServiceImpl extends SalesManagerEntityServiceImpl<Long,
 
 		Set<ShoppingCartAttributeItem> cartAttributes = item.getAttributes();
 		Set<ProductAttribute> productAttributes = product.getAttributes();
-		List<ProductAttribute> attributesList = new ArrayList<ProductAttribute>();//attributes maintained
-		List<ShoppingCartAttributeItem> removeAttributesList = new ArrayList<ShoppingCartAttributeItem>();//attributes to remove
-		//DELETE ORPHEANS MANUALLY
-		if ( (productAttributes != null && productAttributes.size() > 0) || (cartAttributes != null && cartAttributes.size() > 0)) {
-			for (ShoppingCartAttributeItem attribute : cartAttributes) {
-				long attributeId = attribute.getProductAttributeId().longValue();
-				boolean existingAttribute = false;
-				for (ProductAttribute productAttribute : productAttributes) {
+		List<ProductAttribute> attributesList = new ArrayList<ProductAttribute>();// attributes maintained
+		List<ShoppingCartAttributeItem> removeAttributesList = new ArrayList<ShoppingCartAttributeItem>();// attributes
+																											// to remove
+		// DELETE ORPHEANS MANUALLY
+		if ((productAttributes != null && productAttributes.size() > 0)
+				|| (cartAttributes != null && cartAttributes.size() > 0)) {
+			if(cartAttributes != null && cartAttributes.size() > 0) {
+				for (ShoppingCartAttributeItem attribute : cartAttributes) {
+					long attributeId = attribute.getProductAttributeId().longValue();
+					boolean existingAttribute = false;
+					
+					if(productAttributes != null && productAttributes.size() > 0) {
+						for (ProductAttribute productAttribute : productAttributes) {
 
-					if (productAttribute.getId().longValue() == attributeId) {
-						attribute.setProductAttribute(productAttribute);
-						attributesList.add(productAttribute);
-						existingAttribute = true;
-						break;
+							if (productAttribute.getId().longValue() == attributeId) {
+								attribute.setProductAttribute(productAttribute);
+								attributesList.add(productAttribute);
+								existingAttribute = true;
+								break;
+							}
+						}
+
+						if (!existingAttribute) {
+							removeAttributesList.add(attribute);
+						}
 					}
 				}
-				
-				if(!existingAttribute) {
-					removeAttributesList.add(attribute);
-				}
-
 			}
+			
 		}
-		
-		//cleanup orphean item
-		if(CollectionUtils.isNotEmpty(removeAttributesList)) {
-			for(ShoppingCartAttributeItem attr : removeAttributesList) {
+
+		// cleanup orphean item
+		if (CollectionUtils.isNotEmpty(removeAttributesList)) {
+			for (ShoppingCartAttributeItem attr : removeAttributesList) {
 				shoppingCartAttributeItemRepository.delete(attr);
 			}
 		}
-		
-		//cleanup detached attributes
-		if(CollectionUtils.isEmpty(attributesList)) {
+
+		// cleanup detached attributes
+		if (CollectionUtils.isEmpty(attributesList)) {
 			item.setAttributes(null);
 		}
-		
-		
 
 		// set item price
 		FinalPrice price = pricingService.calculateProductPrice(product, attributesList);

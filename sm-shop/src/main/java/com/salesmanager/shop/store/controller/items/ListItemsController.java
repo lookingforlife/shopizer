@@ -1,5 +1,18 @@
 package com.salesmanager.shop.store.controller.items;
 
+import java.util.Locale;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.salesmanager.core.business.services.catalog.product.manufacturer.ManufacturerService;
 import com.salesmanager.core.model.catalog.product.manufacturer.Manufacturer;
 import com.salesmanager.core.model.merchant.MerchantStore;
@@ -10,17 +23,6 @@ import com.salesmanager.shop.model.shop.PageInformation;
 import com.salesmanager.shop.populator.manufacturer.ReadableManufacturerPopulator;
 import com.salesmanager.shop.store.controller.ControllerConstants;
 import com.salesmanager.shop.utils.PageBuilderUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Locale;
 
 /**
  * Drives various product listings
@@ -30,7 +32,7 @@ import java.util.Locale;
 @Controller
 public class ListItemsController {
 	
-	@Inject
+	@Autowired
 	ManufacturerService manufacturerService;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ListItemsController.class);

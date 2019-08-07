@@ -4,27 +4,14 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 
 <%@ page session="false" %>				
-				
-
-
-
 <div class="tabbable">
 
- 					<jsp:include page="/common/adminTabs.jsp" />
-  					
-  					 <div class="tab-content">
-
-    					<div class="tab-pane active" id="catalogue-section">
-
-
-
-								<div class="sm-ui-component">
-								<h3><s:message code="label.order.title" text="Orders" /></h3>	
-								<br/>
-								
-								
-								
-								
+	<jsp:include page="/common/adminTabs.jsp" />
+	<div class="tab-content">
+ 		<div class="tab-pane active" id="catalogue-section">
+			<div class="sm-ui-component">
+				<h3><s:message code="label.order.title" text="Orders" /></h3>	
+				<br/>
 				 <!-- Listing grid include -->
 				 <c:set value="/admin/orders/paging.html" var="pagingUrl" scope="request"/>
 				 <c:set value="/admin/orders/remove.html" var="removeUrl" scope="request"/>
@@ -34,26 +21,10 @@
 				 <c:set var="componentTitleKey" value="label.order.title" scope="request"/>
 				 <c:set var="gridHeader" value="/pages/admin/orders/orders-gridHeader.jsp" scope="request"/>
 				 <c:set var="canRemoveEntry" value="false" scope="request"/>
-
-            	 <jsp:include page="/pages/admin/components/list.jsp"></jsp:include> 
-				 <!-- End listing grid include -->
-			      			     
-			      			     
-      					</div>
-      					
-
-      			     
-      			     
-
-
-      			     
-      			     
-    
-
-
-   					</div>
-
-
-  					</div>
-
-				</div>		      			     
+		
+		         <jsp:include page="/pages/admin/components/list.jsp"></jsp:include> 
+			 	<!-- End listing grid include -->
+	   		</div>
+		</div>
+	</div>
+</div>		      			     

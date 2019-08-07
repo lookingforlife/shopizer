@@ -2,6 +2,7 @@ package com.salesmanager.core.business.services.merchant;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.exception.ServiceException;
@@ -18,14 +19,14 @@ public class MerchantStoreServiceImpl extends SalesManagerEntityServiceImpl<Inte
 	
 
 		
-	@Inject
+	@Autowired
 	protected ProductTypeService productTypeService;
 	
 
 	
 	private MerchantRepository merchantRepository;
 	
-	@Inject
+	@Autowired
 	public MerchantStoreServiceImpl(MerchantRepository merchantRepository) {
 		super(merchantRepository);
 		this.merchantRepository = merchantRepository;

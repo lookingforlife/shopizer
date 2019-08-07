@@ -3,8 +3,10 @@ package com.salesmanager.core.business.services.user;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.inject.Inject;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.repositories.user.GroupRepository;
 import com.salesmanager.core.business.services.common.generic.SalesManagerEntityServiceImpl;
@@ -19,7 +21,7 @@ public class GroupServiceImpl extends SalesManagerEntityServiceImpl<Integer, Gro
   GroupRepository groupRepository;
 
 
-  @Inject
+  @Autowired
   public GroupServiceImpl(GroupRepository groupRepository) {
     super(groupRepository);
     this.groupRepository = groupRepository;

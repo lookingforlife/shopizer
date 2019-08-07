@@ -3,6 +3,18 @@
  */
 package com.salesmanager.shop.store.controller.shoppingCart;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.salesmanager.core.model.customer.Customer;
 import com.salesmanager.core.model.merchant.MerchantStore;
 import com.salesmanager.core.model.reference.language.Language;
@@ -10,17 +22,6 @@ import com.salesmanager.shop.constants.Constants;
 import com.salesmanager.shop.model.shoppingcart.ShoppingCartData;
 import com.salesmanager.shop.store.controller.AbstractController;
 import com.salesmanager.shop.store.controller.shoppingCart.facade.ShoppingCartFacade;
-import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Umesh A
@@ -32,7 +33,7 @@ public class MiniCartController extends AbstractController{
 
 	private static final Logger LOG = LoggerFactory.getLogger(MiniCartController.class);
 	
-	@Inject
+	@Autowired
 	private ShoppingCartFacade shoppingCartFacade;
 	
 	

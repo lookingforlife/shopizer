@@ -5,12 +5,13 @@
  */
 package com.salesmanager.test.common;
 
-import javax.inject.Inject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.catalog.category.CategoryService;
 import com.salesmanager.core.business.services.catalog.product.PricingService;
@@ -60,89 +61,89 @@ public class AbstractSalesManagerCoreTestCase {
 	protected static String ENGLISH_LANGUAGE_CODE = "en";
 	protected static String FRENCH_LANGUAGE_CODE = "fr";
 	
-	@Inject
+	@Autowired
 	protected InitializationDatabase   initializationDatabase;
 	
-	@Inject
+	@Autowired
 	protected ProductService productService;
 	
-	@Inject
+	@Autowired
 	protected PricingService pricingService;
 	
-	@Inject
+	@Autowired
 	private ProductPriceUtils priceUtil;
 
 	
-	@Inject
+	@Autowired
 	protected ProductPriceService productPriceService;
 	
-	@Inject
+	@Autowired
 	protected ProductAttributeService productAttributeService;
 	
-	@Inject
+	@Autowired
 	protected ProductOptionService productOptionService;
 	
-	@Inject
+	@Autowired
 	protected ProductOptionValueService productOptionValueService;
 	
-	@Inject
+	@Autowired
 	protected ProductAvailabilityService productAvailabilityService;
 	
-	@Inject
+	@Autowired
 	protected ProductReviewService productReviewService;
 	
-	@Inject
+	@Autowired
 	protected ProductImageService productImageService;
 	
-	@Inject
+	@Autowired
 	protected ProductRelationshipService productRelationshipService;
 	
-	@Inject
+	@Autowired
 	protected CategoryService categoryService;
 	
-	@Inject
+	@Autowired
 	protected MerchantStoreService merchantService;
 	
-	@Inject
+	@Autowired
 	protected ProductTypeService productTypeService;
 	
-	@Inject
+	@Autowired
 	protected LanguageService languageService;
 	
-	@Inject
+	@Autowired
 	protected CountryService countryService;
 	
-	@Inject
+	@Autowired
 	protected CurrencyService currencyService;
 	
-	@Inject
+	@Autowired
 	protected ManufacturerService manufacturerService;
 	
-	@Inject
+	@Autowired
 	protected ZoneService zoneService;
 	
-	@Inject
+	@Autowired
 	protected CustomerService customerService;
 	
-	@Inject
+	@Autowired
 	protected CustomerOptionService customerOptionService;
 	
-	@Inject
+	@Autowired
 	protected CustomerOptionValueService customerOptionValueService;
 	
-	@Inject
+	@Autowired
 	protected CustomerOptionSetService customerOptionSetService;
 	
-	@Inject
+	@Autowired
 	protected OrderService orderService;
 	
-	@Inject
+	@Autowired
 	protected PaymentService paymentService;
 	
-	@Inject
+	@Autowired
 	protected ShoppingCartService shoppingCartService;
 	
-	@Inject
+	@Autowired
 	protected EmailService emailService;
 	
 	@Before

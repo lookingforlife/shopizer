@@ -1,11 +1,8 @@
 package com.salesmanager.core.business.configuration.db;
 
-import javax.inject.Inject;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.vault.annotation.VaultPropertySource;
 
 import com.salesmanager.core.model.system.credentials.DbCredentials;
 
@@ -13,7 +10,7 @@ import com.salesmanager.core.model.system.credentials.DbCredentials;
 //@VaultPropertySource("secret/db")
 public class DbConfig {
 	
-    @Inject Environment env;
+	@Autowired Environment env;
 
     @Bean
     public DbCredentials dbCredentials() {

@@ -1290,7 +1290,7 @@
 	},
 	{
 		"zoneCode": "NS",
-		"zoneName": "Nouvelle Écosse",
+		"zoneName": "Nouvelle 脡cosse",
 		"countryCode": "CA"
 	},
 	{
@@ -1310,12 +1310,12 @@
 	},
 	{
 		"zoneCode": "PE",
-		"zoneName": "Île-du-Prince-Édouard",
+		"zoneName": "脦le-du-Prince-脡douard",
 		"countryCode": "CA"
 	},
 	{
 		"zoneCode": "QC",
-		"zoneName": "Québec",
+		"zoneName": "Qu茅bec",
 		"countryCode": "CA"
 	},
 	{
@@ -1883,6 +1883,184 @@
 		"zoneName":"Nouvelle-Galles du Sud",
 		"countryCode":"AU"
 	}
+	
+	,
+	{
+		"zoneCode":"NSW",
+		"zoneName":"Nouvelle-Galles du Sud",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"140000",
+		"zoneName":"山西省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"230000",
+		"zoneName":"黑龙江省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"710000",
+		"zoneName":"台湾省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"810000",
+		"zoneName":"香港特别行政区",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"820000",
+		"zoneName":"澳门特别行政区",
+		"countryCode":"CN"
+	},
 
+	{
+		"zoneCode":"110000",
+		"zoneName":"北京市",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"430000",
+		"zoneName":"湖南省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"120000",
+		"zoneName":"天津市",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"650000",
+		"zoneName":"新疆维吾尔自治区",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"520000",
+		"zoneName":"贵州省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"640000",
+		"zoneName":"宁夏回族自治区",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"610000",
+		"zoneName":"陕西省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"420000",
+		"zoneName":"湖北省",
+		"countryCode":"CN"
+	}
+	,
+	{
+		"zoneCode":"540000",
+		"zoneName":"西藏自治区",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"410000",
+		"zoneName":"河南省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"340000",
+		"zoneName":"安徽省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"210000",
+		"zoneName":"辽宁省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"350000",
+		"zoneName":"福建省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"630000",
+		"zoneName":"青海省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"150000",
+		"zoneName":"内蒙古自治区",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"310000",
+		"zoneName":"上海市",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"320000",
+		"zoneName":"江苏省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"370000",
+		"zoneName":"山东省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"510000",
+		"zoneName":"四川省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"130000",
+		"zoneName":"河北省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"620000",
+		"zoneName":"甘肃省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"330000",
+		"zoneName":"浙江省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"440000",
+		"zoneName":"广东省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"220000",
+		"zoneName":"吉林省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"450000",
+		"zoneName":"广西壮族自治区",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"530000",
+		"zoneName":"云南省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"360000",
+		"zoneName":"江西省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"460000",
+		"zoneName":"海南省",
+		"countryCode":"CN"
+	},
+	{
+		"zoneCode":"500000",
+		"zoneName":"重庆市",
+		"countryCode":"CN"
+	}
 ] 
 }

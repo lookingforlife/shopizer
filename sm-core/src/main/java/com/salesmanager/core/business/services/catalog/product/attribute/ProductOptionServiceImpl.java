@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.exception.ServiceException;
@@ -21,10 +22,10 @@ public class ProductOptionServiceImpl extends
 	
 	private ProductOptionRepository productOptionRepository;
 	
-	@Inject
+	@Autowired
 	private ProductAttributeService productAttributeService;
 	
-	@Inject
+	@Autowired
 	public ProductOptionServiceImpl(
 			ProductOptionRepository productOptionRepository) {
 			super(productOptionRepository);

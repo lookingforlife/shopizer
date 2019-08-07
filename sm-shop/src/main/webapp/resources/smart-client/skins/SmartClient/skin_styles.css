@@ -194,10 +194,6 @@
 ============================================================ 
   */
 
-.menuTable {
-    border-top:2px outset white; border-bottom:2px outset white; 
-    border-left:2px outset white; border-right:2px outset white;
-}
 .menu,
 .menuSelected,
 .menuOver,
@@ -495,6 +491,7 @@
 .formCellError,
 .formTitleError,
 .formHint,
+.formHintDisabled,
 .headerItem,
 .headerItemDisabled,
 .headerItemError,
@@ -504,6 +501,7 @@
 .textItem,
 .textItemFocused,
 .textItemDisabled,
+.textItemDisabledHint,
 .textItemError,
 .textItemHint,
 .selectItemControl,
@@ -529,7 +527,8 @@
     font-weight:bold; color:#204268; 
     background-color:#CFD9F2
 }
-.formHint {
+.formHint,
+.formHintDisabled {
     color:#666666; padding:3px;
 }
 
@@ -544,6 +543,7 @@
 .textItem,
 .textItemFocused,
 .textItemDisabled,
+.textItemDisabledHint,
 .textItemError,
 .textItemHint { 
     background-color:#FFFFFF;
@@ -551,6 +551,10 @@
 }
 .textItemHint {
     color:#666666;
+}
+.textItemDisabled,
+.textItemDisabledHint {
+    color:#ACA899;
 }
 
 .comboBoxItemPendingText {
@@ -593,6 +597,10 @@
     padding:0px;
 }
 
+.staticTextItemDisabled {
+    color:#ACA899;
+}
+
 .pickListMenuBody {
     border:1px solid #808080;
 }
@@ -605,6 +613,20 @@
 }
 .pickListCellDisabled {
     color:#666666; background-color:#FFFFFF;
+}
+
+.pickListCellOver,
+.pickListCellSelectedOver,
+.pickListCellOverDark,
+.pickListCellSelectedOverDark,
+.tallPickListCellOver,
+.tallPickListCellSelectedOver,
+.tallPickListCellOverDark,
+.tallPickListCellSelectedOverDark {
+  background-color: #B8D0FF;
+  color: black;
+  font-family: Verdana,Bitstream Vera Sans,sans-serif;
+  font-size: 11px;
 }
 
 /* checkbox and radioButton */
@@ -642,7 +664,63 @@
 .dateChooserButtonSelected,
 .dateChooserButtonSelectedDown,
 .dateChooserButtonSelectedOver,
-.dateChooserButtonSelectedDisabled {
+.dateChooserButtonSelectedDisabled,
+.dateChooserNavButton,
+.dateChooserNavButtonOver,
+.dateChooserNavButtonDown,
+.dateChooserNavButtonSelected,
+.dateChooserNavButtonSelectedOver,
+.dateChooserNavButtonSelectedDown,
+.dateChooserWeekday,
+.dateChooserWeekdayOver,
+.dateChooserWeekdayDown,
+.dateChooserWeekdaySelected,
+.dateChooserWeekdaySelectedOver,
+.dateChooserWeekdaySelectedDown,
+.dateChooserWeekdayDisabled,
+.dateChooserWeekend,
+.dateChooserWeekendOver,
+.dateChooserWeekendDown,
+.dateChooserWeekendSelected,
+.dateChooserWeekendSelectedOver,
+.dateChooserWeekendSelectedDown,
+.dateChooserWeekendDisabled,
+.dateChooserDisabledWeekday,
+.dateChooserDisabledWeekdayOver,
+.dateChooserDisabledWeekdayDown,
+.dateChooserDisabledWeekdaySelected,
+.dateChooserDisabledWeekdaySelectedDown,
+.dateChooserDisabledWeekdaySelectedOver,
+.dateChooserDisabledWeekend,
+.dateChooserDisabledWeekendOver,
+.dateChooserDisabledWeekendDown,
+.dateChooserDisabledWeekendSelected,
+.dateChooserDisabledWeekendSelectedDown,
+.dateChooserDisabledWeekendSelectedOver,
+.dateChooserSelectedWeek,
+.dateChooserSelectedWeekOver,
+.dateChooserSelectedWeekDown,
+.dateChooserSelectedWeekDisabled,
+.dateChooserSelectedWeekSelected,
+.dateChooserSelectedWeekSelectedDown,
+.dateChooserSelectedWeekSelectedOver,
+.dateChooserSelectedWeekSelectedDisabled,
+.dateChooserFiscalYearCell,
+.dateChooserFiscalYearCellOver,
+.dateChooserFiscalYearCellDown,
+.dateChooserFiscalYearCellDisabled,
+.dateChooserFiscalYearCellSelected,
+.dateChooserFiscalYearCellSelectedDown,
+.dateChooserFiscalYearCellSelectedOver,
+.dateChooserFiscalYearCellSelectedDisabled,
+.dateChooserWeekCell,
+.dateChooserWeekCellOver,
+.dateChooserWeekCellDown,
+.dateChooserWeekCellDisabled,
+.dateChooserWeekCellSelected,
+.dateChooserWeekCellSelectedDown,
+.dateChooserWeekCellSelectedOver,
+.dateChooserWeekCellSelectedDisabled {
     font-family:Verdana,Bitstream Vera Sans,sans-serif; font-size:10px; background-color:#3E74B3;
     border-left:1px solid #00008B; border-top:1px solid #00008B;
     border-right:1px solid #F0F8FF; border-bottom:1px solid #F0F8FF;
@@ -677,7 +755,13 @@
     color:#666666;
 }
 
-
+/* year and month pop-up menus */
+.dateChooserYearMenu,
+.dateChooserMonthMenu,
+.dateChooserWeekMenu {
+  /*background-color: white;
+  border: 2px solid #4d4d4d;*/
+}
 						
 /*============================================================
 	9) Slider & Rangebar
@@ -991,10 +1075,9 @@
 .toolStripGroupDisabled {
     background: #C7C7C7;
     border: 1px solid #A7ABB4;
-    border-radius: 3px;
     -moz-border-radius: 3px;
-    -khtml-border-radius: 3px;
     -webkit-border-radius: 3px;
+    border-radius: 3px;
 }
 
 .toolStripGroupTitle,
@@ -1647,6 +1730,7 @@ IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 .calendar,
 .calendarDisabled,
 .calendarWorkday,
+.calendarWorkdayDisabled,
 .calendarDark {
     font-family:Verdana,Bitstream Vera Sans,sans-serif; font-size:11px;
     color:black;
@@ -1654,12 +1738,14 @@ IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
     background-color:#ffffff;
 }
 
+.calendarWorkdayDisabled,
+.calendarDark,
 .calendarDisabled {
     background-color:gainsboro;    
 }
 
 .calendarWorkday {
-    background-color:#ffffcc; 
+    background-color:#f2f2f2; 
 }
 
 .calendarOver,

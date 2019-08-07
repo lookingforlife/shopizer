@@ -25,8 +25,6 @@ response.setDateHeader ("Expires", -1);
 
 $(document).ready(function() {
 	
-
-	
 	getZones($('#registration_country').val(),'<c:out value="${customer.billing.zone}" />',isFormValid);
 	$("#hidden_zones").hide();
 	$("#registration_country").change(function() {
@@ -77,10 +75,7 @@ function isFormValid() {
 	}
 }
 
-
- 
- 
- </script>
+</script>
 
 
 

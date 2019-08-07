@@ -184,7 +184,7 @@ public class ProductPriceUtils {
 	 * @throws Exception
 	 */
 	public String getAdminFormatedAmount(MerchantStore store, BigDecimal amount) throws Exception {
-			
+		
 		if(amount==null) {
 			return "";
 		}

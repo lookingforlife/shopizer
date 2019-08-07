@@ -1,17 +1,20 @@
 package com.salesmanager.shop.utils;
 
 import java.util.Locale;
-import javax.inject.Inject;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
+
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.reference.language.LanguageService;
 import com.salesmanager.core.model.merchant.MerchantStore;
@@ -24,7 +27,7 @@ public class LanguageUtils {
 	
 	protected final Log logger = LogFactory.getLog(getClass());
 	
-	@Inject
+	@Autowired
 	LanguageService languageService;
 	
 	public Language getServiceLanguage(String lang) {

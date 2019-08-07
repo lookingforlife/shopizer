@@ -46,9 +46,7 @@ public class MoneyOrderPayment implements PaymentModule {
 			
 		}
 		
-		
-		
-			return;
+		return;
 
 	}
 

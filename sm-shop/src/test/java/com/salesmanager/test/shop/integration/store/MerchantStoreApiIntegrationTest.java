@@ -3,10 +3,12 @@ package com.salesmanager.test.shop.integration.store;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
+
 import java.util.Arrays;
-import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -18,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
+
 import com.salesmanager.core.model.merchant.MerchantStore;
 import com.salesmanager.shop.application.ShopApplication;
 import com.salesmanager.shop.model.references.PersistableAddress;
@@ -33,7 +36,7 @@ public class MerchantStoreApiIntegrationTest extends ServicesTestSupport {
   private static final String CURRENCY = "CAD";
   private static final String DEFAULT_LANGUAGE = "en";
 
-  @Inject
+  @Autowired
   private TestRestTemplate testRestTemplate;
   
   /**

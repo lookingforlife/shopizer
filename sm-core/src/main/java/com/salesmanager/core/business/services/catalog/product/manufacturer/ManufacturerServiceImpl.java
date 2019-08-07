@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.exception.ServiceException;
@@ -27,7 +28,7 @@ public class ManufacturerServiceImpl extends
 
 	private ManufacturerRepository manufacturerRepository;
 	
-	@Inject
+	@Autowired
 	public ManufacturerServiceImpl(
 		ManufacturerRepository manufacturerRepository) {
 		super(manufacturerRepository);
@@ -50,6 +51,12 @@ public class ManufacturerServiceImpl extends
 	@Override
 	public List<Manufacturer> listByStore(MerchantStore store, Language language) throws ServiceException {
 		return manufacturerRepository.findByStoreAndLanguage(store.getId(), language.getId());
+	}
+	
+	@Override
+	public List<Manufacturer> listManufacturers() throws ServiceException {
+		// TODO Auto-generated method stub
+		return manufacturerRepository.findAll();
 	}
 	
 	@Override

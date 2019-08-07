@@ -25,28 +25,18 @@ response.setDateHeader ("Expires", -1);
  
  
  <html xmlns="http://www.w3.org/1999/xhtml"> 
- 
- 
      <head>
-     
-     
-        	 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        	 	<meta charset="utf-8">
-    			<title><s:message code="label.storeadministration" text="Store administration" /></title>
-    			<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    			<meta name="description" content="">
-    			<meta name="author" content="">
-    			
-    			<script src="<c:url value="/resources/js/bootstrap/jquery.js" />"></script>
-    			<script src="<c:url value="/resources/js/jquery.friendurl.min.js" />"></script>
- 
-  
-                <jsp:include page="/common/adminLinks.jsp" />
-                
-                
+   	 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+   	 	<meta charset="utf-8"></meta>
+		<title><s:message code="label.storeadministration" text="Store administration" /></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+		<meta name="description" content=""></meta>
+		<meta name="author" content=""></meta>
+		
+		<script src="<c:url value="/resources/js/bootstrap/jquery.js" />"></script>
+		<script src="<c:url value="/resources/js/jquery.friendurl.min.js" />"></script>
 
-
- 	
+        <jsp:include page="/common/adminLinks.jsp" />
  	
  	</head>
  
@@ -83,6 +73,11 @@ response.setDateHeader ("Expires", -1);
 											<c:url value="/admin/logout" var="logoutUrl"/>
 											<a href="${logoutUrl}"><s:message code="button.label.logout" text="Logout" /></a>
 										</li>
+										<li>
+											<c:url value="/admin/user/password.html" var="changePasswordUrl"/>
+											<a href="${changePasswordUrl}"><s:message code="label.generic.changepassword" text="Change Password" /></a>
+										</li>
+										
 									</ul>
 									
 								</li>
@@ -125,8 +120,6 @@ response.setDateHeader ("Expires", -1);
 	
 	<div class="row">&nbsp;</div>
 
-
-
 	<div class="container"> 
 		<div class="row">	
 			
@@ -155,21 +148,12 @@ response.setDateHeader ("Expires", -1);
 
 
 		</div>
-
-
-
-  
 		<hr> 
   
-  
 		<footer> 
- 			<p>&copy; Shopizer 2010-<%=Calendar.getInstance().get(Calendar.YEAR)%></p> 
+ 			<p>&copy; Myshop 2019-<%=Calendar.getInstance().get(Calendar.YEAR)%></p> 
 		</footer> 
-  
-  
 	</div> <!-- /container --> 
-	
-
   
 </div>
 
@@ -191,15 +175,9 @@ response.setDateHeader ("Expires", -1);
     <script src="<c:url value="/resources/js/bootstrap/bootstrap-collapse.js" />"></script>
     <script src="<c:url value="/resources/js/bootstrap/bootstrap-carousel.js" />"></script>
     <script src="<c:url value="/resources/js/bootstrap/bootstrap-typeahead.js" />"></script>
-     
-
-    
-     	
-     	
-     <script>
+    <script>
 	
 		$(document).ready(function(){ 
-			
 
 			$("#catalogue-categories-list-link").click(function() {
 				window.location='<c:url value="/admin/categories/categories.html" />';
@@ -360,8 +338,6 @@ response.setDateHeader ("Expires", -1);
 		
 		function checkCode(code, id, url) {
 			
-
-			
 			$.ajax({
 					type: 'POST',
 					dataType: "json",
@@ -370,25 +346,16 @@ response.setDateHeader ("Expires", -1);
 					success: function(response) { 
 						var msg = isc.XMLTools.selectObjects(response, "/response/statusMessage");
 						var status = isc.XMLTools.selectObjects(response, "/response/status");
-						
 						callBackCheckCode(msg,status);
-
-						
 					},
 					error: function(jqXHR,textStatus,errorThrown) { 
 						alert(jqXHR + "-" + textStatus + "-" + errorThrown);
 					}
 					
 			});
-			
-			
-			
 		}
 	
 </script>	
-     	
-         
- 
  	</body>
  
  </html>

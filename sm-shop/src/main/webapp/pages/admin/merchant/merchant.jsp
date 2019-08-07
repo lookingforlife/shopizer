@@ -331,18 +331,5 @@ function callBackCheckCode(msg,code) {
 	                  		</div>
 	            	 </div>
 
-
-      					
 				</form:form>
-				
-				
-				
-				
-
-				
-				
-				
-				
-
-
 </div>

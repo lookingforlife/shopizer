@@ -19,8 +19,8 @@
     http://www.springframework.org/schema/data/jpa/spring-jpa.xsd"> 
 
 	<!-- Shipping integration modules -->
-
-	<util:map id="shippingModules" map-class="java.util.HashMap" key-type="java.lang.String" value-type="com.salesmanager.core.business.modules.integration.shipping.model.ShippingQuoteModule">
+	<!-- com.salesmanager.core.modules.integration.shipping.model.ShippingQuoteModule -->
+	<util:map id="shippingModules" map-class="java.util.HashMap" key-type="java.lang.String" value-type="com.salesmanager.core.modules.integration.shipping.model.ShippingQuoteModule">
     			<beans:entry key="canadapost" value-ref="canadapost"/>
     			<beans:entry key="usps" value-ref="usps"/>
     			<beans:entry key="ups" value-ref="ups"/>
@@ -29,12 +29,13 @@
     			<!--
     			Requires google maps shippingDistancePreProcessor.apiKey=<YOUR KEY>
     			in configs.properties
+    			-->
     			<beans:entry key="priceByDistance" value-ref="priceByDistance"/>
-    			 -->
+    			 
     			<!--
-    			This will activate drules
+    			This will activate drules-->
     			<beans:entry key="customQuotesRules" value-ref="customShippingPriceModule"/>
-    			--><!--as defined in shopizer-core-rules-->
+    			<!--as defined in shopizer-core-rules-->
     </util:map>
     
     <beans:bean id="manufacturerShippingCodeOrderTotalModule" class="com.salesmanager.core.business.modules.order.total.ManufacturerShippingCodeOrderTotalModuleImpl">
@@ -42,7 +43,7 @@
 	</beans:bean>
     
     <!--  Payment integration modules -->
-	<util:map id="paymentModules" map-class="java.util.HashMap" key-type="java.lang.String" value-type="com.salesmanager.core.business.modules.integration.payment.model.PaymentModule">
+	<util:map id="paymentModules" map-class="java.util.HashMap" key-type="java.lang.String" value-type="com.salesmanager.core.modules.integration.payment.model.PaymentModule">
     			<beans:entry key="beanstream" value-ref="beanstream"/>
     			<beans:entry key="paypal-express-checkout" value-ref="paypal-ec"/>
     			<beans:entry key="moneyorder" value-ref="moneyorder"/>

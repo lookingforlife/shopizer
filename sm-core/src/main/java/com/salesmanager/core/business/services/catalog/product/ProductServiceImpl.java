@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -52,40 +53,40 @@ public class ProductServiceImpl extends SalesManagerEntityServiceImpl<Long, Prod
 	
 	ProductRepository productRepository;
 	
-	@Inject
+	@Autowired
 	CategoryService categoryService;
 	
-	@Inject
+	@Autowired
 	ProductAvailabilityService productAvailabilityService;
 	
-	@Inject
+	@Autowired
 	ProductPriceService productPriceService;
 
-	@Inject
+	@Autowired
 	ProductOptionService productOptionService;
 	
-	@Inject
+	@Autowired
 	ProductOptionValueService productOptionValueService;
 	
-	@Inject
+	@Autowired
 	ProductAttributeService productAttributeService;
 	
-	@Inject
+	@Autowired
 	ProductRelationshipService productRelationshipService;
 	
-	@Inject
+	@Autowired
 	SearchService searchService;
 	
-	@Inject
+	@Autowired
 	ProductImageService productImageService;
 	
-	@Inject
+	@Autowired
 	CoreConfiguration configuration;
 	
-	@Inject
+	@Autowired
 	ProductReviewService productReviewService;
 	
-	@Inject
+	@Autowired
 	public ProductServiceImpl(ProductRepository productRepository) {
 		super(productRepository);
 		this.productRepository = productRepository;

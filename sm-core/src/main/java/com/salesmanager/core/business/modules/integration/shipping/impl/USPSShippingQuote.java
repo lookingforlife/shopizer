@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -26,6 +24,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.salesmanager.core.business.constants.Constants;
 import com.salesmanager.core.business.services.reference.country.CountryService;
@@ -59,10 +58,10 @@ public class USPSShippingQuote implements ShippingQuoteModule {
 	private static final Logger LOGGER = LoggerFactory.getLogger(USPSShippingQuote.class);
 
 	
-	@Inject
+	@Autowired
 	private ProductPriceUtils productPriceUtils;
 	
-	@Inject
+	@Autowired
 	private CountryService countryService;
 	
 

@@ -1,6 +1,8 @@
 package com.salesmanager.core.business.modules.email;
 
 import javax.inject.Inject;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,10 +12,10 @@ public class EmailComponent implements HtmlEmailSender {
   @Value("${config.emailSender}")
   private String emailSender;
 
-  @Inject
+  @Autowired
   private EmailModule defaultEmailSender;
 
-  @Inject
+  @Autowired
   private EmailModule sesEmailSender;
 
   @Override

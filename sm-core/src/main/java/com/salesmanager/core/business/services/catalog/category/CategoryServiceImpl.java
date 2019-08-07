@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import com.salesmanager.core.business.constants.Constants;
@@ -28,12 +30,12 @@ public class CategoryServiceImpl extends SalesManagerEntityServiceImpl<Long, Cat
 	 @PersistenceContext(unitName = "shopizerContainer")
 	 private EntityManager em;
 	  
-	 @Inject
+	 @Autowired
 	 private ProductService productService;
 	  
 
 	
-	@Inject
+	 @Autowired
 	public CategoryServiceImpl(CategoryRepository categoryRepository) {
 		super(categoryRepository);
 		this.categoryRepository = categoryRepository;

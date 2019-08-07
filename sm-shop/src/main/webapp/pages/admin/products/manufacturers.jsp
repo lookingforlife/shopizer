@@ -4,26 +4,14 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ page session="false" %>				
 
-
-
 <div class="tabbable">
-
-					<jsp:include page="/common/adminTabs.jsp" />
-  					
-  					 <div class="tab-content">
-
-    					<div class="tab-pane active" id="catalogue-section">
-
-
-								
-								
+	<jsp:include page="/common/adminTabs.jsp" />
+	<div class="tab-content">
+			<div class="tab-pane active" id="catalogue-section">
 				<h3>
 						<s:message code="menu.manufacturer-list" text="Manufacturers" />
 				</h3>	
 				<br/>	
-
-
-
 				 <!-- Listing grid include -->
 				 <c:set value="/admin/catalogue/manufacturer/paging.html" var="pagingUrl" scope="request"/>
 				 <c:set value="/admin/catalogue/manufacturer/remove.html" var="removeUrl" scope="request"/>
@@ -33,30 +21,10 @@
 				 <c:set var="componentTitleKey" value="menu.manufacturer-list" scope="request"/>
 				 <c:set var="gridHeader" value="/pages/admin/products/manufacturers-gridHeader.jsp" scope="request"/>
 				 <c:set var="canRemoveEntry" value="true" scope="request"/>
-
-            	 <jsp:include page="/pages/admin/components/list.jsp"></jsp:include> 
+				
+				 <jsp:include page="/pages/admin/components/list.jsp"></jsp:include> 
 				 <!-- End listing grid include -->
-
-
-			      			     
-            	 
-            	 
-	      			     
-      					</div>
-      					
-
-      			     
-      			     
-
-
-      			     
-      			     
-    
-
-
-   					</div>
-
-
-  					</div>
-
-				</div>		      			     
+ 			     
+			</div>
+	</div>
+</div>

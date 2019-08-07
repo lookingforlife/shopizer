@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.inject.Inject;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +22,7 @@ public class EmailUtils {
 	private final static String EMAIL_ADMIN_LABEL = "EMAIL_ADMIN_LABEL";
 	private final static String LOGOPATH = "LOGOPATH";
 	
-	@Inject
+	@Autowired
 	@Qualifier("img")
 	private ImageFilePath imageUtils;
 	

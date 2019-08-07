@@ -1,11 +1,11 @@
 package com.salesmanager.shop.tags;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.web.context.WebApplicationContext;
@@ -16,10 +16,8 @@ import com.salesmanager.shop.constants.Constants;
 import com.salesmanager.shop.utils.FilePathUtils;
 import com.salesmanager.shop.utils.ImageFilePath;
 
-
 public class ContentImageUrlTag extends RequestContextAwareTag {
-	
-	
+
 	/**
 	 * 
 	 */
@@ -29,39 +27,34 @@ public class ContentImageUrlTag extends RequestContextAwareTag {
 	private MerchantStore merchantStore;
 	private String imageName;
 	private String imageType;
-	
-	@Inject
+
+	@Autowired
 	private FilePathUtils filePathUtils;
-	
-	@Inject
+
+	@Autowired
 	@Qualifier("img")
 	private ImageFilePath imageUtils;
-
 
 	public int doStartTagInternal() throws JspException {
 		try {
 
+			if (filePathUtils == null || imageUtils == null) {
+				WebApplicationContext wac = getRequestContext().getWebApplicationContext();
+				AutowireCapableBeanFactory factory = wac.getAutowireCapableBeanFactory();
+				factory.autowireBean(this);
+			}
 
-			if (filePathUtils==null || imageUtils==null) {
-	            WebApplicationContext wac = getRequestContext().getWebApplicationContext();
-	            AutowireCapableBeanFactory factory = wac.getAutowireCapableBeanFactory();
-	            factory.autowireBean(this);
-	        }
-			
-			HttpServletRequest request = (HttpServletRequest) pageContext
-					.getRequest();
-			
-			MerchantStore merchantStore = (MerchantStore)request.getAttribute(Constants.ADMIN_STORE);
-			if(this.getMerchantStore()!=null) {
+			HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+
+			MerchantStore merchantStore = (MerchantStore) request.getAttribute(Constants.ADMIN_STORE);
+			if (this.getMerchantStore() != null) {
 				merchantStore = this.getMerchantStore();
 			}
 
-			String img = imageUtils.buildStaticImageUtils(merchantStore,this.getImageType(),this.getImageName());
+			String img = imageUtils.buildStaticImageUtils(merchantStore, this.getImageType(), this.getImageName());
 
 			pageContext.getOut().print(img);
 
-
-			
 		} catch (Exception ex) {
 			LOGGER.error("Error while getting content url", ex);
 		}
@@ -95,9 +88,5 @@ public class ContentImageUrlTag extends RequestContextAwareTag {
 	public String getImageType() {
 		return imageType;
 	}
-
-
-
-	
 
 }

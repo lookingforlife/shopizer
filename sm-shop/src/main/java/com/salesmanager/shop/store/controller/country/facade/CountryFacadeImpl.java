@@ -1,5 +1,11 @@
 package com.salesmanager.shop.store.controller.country.facade;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.salesmanager.core.business.exception.ConversionException;
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.reference.country.CountryService;
@@ -10,15 +16,11 @@ import com.salesmanager.shop.model.references.ReadableCountry;
 import com.salesmanager.shop.populator.references.ReadableCountryPopulator;
 import com.salesmanager.shop.store.api.exception.ConversionRuntimeException;
 import com.salesmanager.shop.store.api.exception.ServiceRuntimeException;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.inject.Inject;
-import org.springframework.stereotype.Service;
 
 @Service
 public class CountryFacadeImpl implements CountryFacade {
 
-  @Inject
+  @Autowired
   private CountryService countryService;
 
   @Override

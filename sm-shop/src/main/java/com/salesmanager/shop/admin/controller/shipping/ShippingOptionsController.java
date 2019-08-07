@@ -37,13 +37,13 @@ public class ShippingOptionsController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ShippingOptionsController.class);
 	
 
-	@Inject
+	@Autowired
 	private ShippingService shippingService;
 	
-	@Inject
+	@Autowired
 	LabelUtils messages;
 	
-	@Inject
+	@Autowired
 	private ProductPriceUtils priceUtil;
 	
 	/**
@@ -57,14 +57,9 @@ public class ShippingOptionsController {
 	@PreAuthorize("hasRole('SHIPPING')")
 	@RequestMapping(value="/admin/shipping/shippingOptions.html", method=RequestMethod.GET)
 	public String displayShippingOptions(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-
 		this.setMenu(model, request);
 
 		MerchantStore store = (MerchantStore)request.getAttribute(Constants.ADMIN_STORE);
-		
-
-		
 		ShippingConfiguration shippingConfiguration =  shippingService.getShippingConfiguration(store);
 		
 		if(shippingConfiguration==null) {

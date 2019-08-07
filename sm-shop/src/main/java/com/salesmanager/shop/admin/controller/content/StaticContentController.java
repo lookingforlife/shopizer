@@ -48,11 +48,11 @@ public class StaticContentController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(StaticContentController.class);
 	
-	@Inject
+	@Autowired
 	private ContentService contentService;
 	
 
-	@Inject
+	@Autowired
 	@Qualifier("img")
 	private ImageFilePath imageUtils;
 	

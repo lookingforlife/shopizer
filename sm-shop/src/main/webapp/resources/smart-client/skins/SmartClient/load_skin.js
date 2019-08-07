@@ -54,7 +54,7 @@ with (theWindow) {
         showCustomScrollbars:true
     });
 
-    if(isc.Browser.isIE && isc.Browser.version >= 7) {
+    if(isc.Browser.isIE && isc.Browser.version >= 7 && !isc.Browser.isIE9) {
         isc.Canvas.setAllowExternalFilters(false);
         isc.Canvas.setNeverUseFilters(true);
         if(isc.Window) {
@@ -521,11 +521,13 @@ with (theWindow) {
         isc.SpinnerItem.INCREASE_ICON = isc.addProperties(isc.SpinnerItem.INCREASE_ICON, {
             width:17,
             height:10,
+            showFocused:true,
             src:"[SKIN]/controls/spinner_control_increase.gif"
         })
         isc.SpinnerItem.DECREASE_ICON = isc.addProperties(isc.SpinnerItem.DECREASE_ICON, {
             width:17,
             height:10,
+            showFocused:true,
             src:"[SKIN]/controls/spinner_control_decrease.gif"
         })
     }
@@ -605,8 +607,11 @@ with (theWindow) {
         });
     }
 
-// specify where the browser should redirect if not supported
-isc.Page.checkBrowserAndRedirect("[SKIN]/unsupported_browser.html");
+    // remember the current skin so we can detect multiple skins being loaded
+    if (isc.setCurrentSkin) isc.setCurrentSkin("SmartClient");
+    
+    // specify where the browser should redirect if not supported
+    isc.Page.checkBrowserAndRedirect("[SKIN]/unsupported_browser.html");
 
 }   // end with()
 }   // end loadSkin()

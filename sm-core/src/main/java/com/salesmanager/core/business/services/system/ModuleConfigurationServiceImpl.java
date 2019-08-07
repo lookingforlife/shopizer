@@ -5,12 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,17 +28,17 @@ public class ModuleConfigurationServiceImpl extends
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(ModuleConfigurationServiceImpl.class);
 	
-	@Inject
+	@Autowired
 	private IntegrationModulesLoader integrationModulesLoader;
 	
 
 	
 	private ModuleConfigurationRepository moduleConfigurationRepository;
 	
-	@Inject
+	@Autowired
 	private CacheUtils cache;
 	
-	@Inject
+	@Autowired
 	public ModuleConfigurationServiceImpl(
 			ModuleConfigurationRepository moduleConfigurationRepository) {
 			super(moduleConfigurationRepository);
@@ -56,10 +55,8 @@ public class ModuleConfigurationServiceImpl extends
 	@Override
 	public List<IntegrationModule> getIntegrationModules(String module) {
 		
-		
 		List<IntegrationModule> modules = null;
 		try {
-			
 			//CacheUtils cacheUtils = CacheUtils.getInstance();
 			modules = (List<IntegrationModule>) cache.getFromCache("INTEGRATION_M)" + module);
 			if(modules==null) {

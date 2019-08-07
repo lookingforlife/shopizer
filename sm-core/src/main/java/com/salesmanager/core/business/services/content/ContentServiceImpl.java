@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import com.salesmanager.core.business.exception.ServiceException;
@@ -30,10 +31,10 @@ public class ContentServiceImpl extends SalesManagerEntityServiceImpl<Long, Cont
 
   private final ContentRepository contentRepository;
 
-  @Inject
+  @Autowired
   StaticContentFileManager contentFileManager;
 
-  @Inject
+  @Autowired
   public ContentServiceImpl(ContentRepository contentRepository) {
     super(contentRepository);
 

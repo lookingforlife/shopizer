@@ -3,7 +3,6 @@
     Copyright 2003 and beyond, Isomorphic Software
 ============================================================*/
 
-
 isc.loadSkin = function (theWindow) {
 
     if (theWindow == null) theWindow = window;
@@ -15,15 +14,14 @@ isc.loadSkin = function (theWindow) {
         //----------------------------------------
         // must be relative to your application file or isomorphicDir
         isc.Page.setSkinDir("[ISOMORPHIC]/skins/EnterpriseBlue/");
-        
+
         //----------------------------------------
         // Load skin style sheet(s)
         //----------------------------------------
         isc.Page.loadStyleSheet("[SKIN]/skin_styles.css", theWindow)
 
-        //TODO: For development purposes, useCSS3 as false. Later on the boolean value will be
-        var useCSS3 = false;
-        //determined by checking browser if it is CSS3 compliant.
+        var useCSS3 = isc.Browser.useCSS3,
+            useSpriting = isc.Browser.useSpriting;
 
         if (useCSS3) {
 
@@ -32,12 +30,12 @@ isc.loadSkin = function (theWindow) {
                 groupBorderCSS:"1px solid #165fa7",
                 showCustomScrollbars:true
             });
-            
 
-            if (isc.Browser.isIE && isc.Browser.version >= 7) {
+
+            if(isc.Browser.isIE && isc.Browser.version >= 7 && !isc.Browser.isIE9) {
                 isc.Canvas.setAllowExternalFilters(false);
                 isc.Canvas.setNeverUseFilters(true);
-                
+
                 if (isc.Window) {
                     isc.Window.addProperties({
                         modalMaskOpacity:null,
@@ -48,34 +46,58 @@ isc.loadSkin = function (theWindow) {
             }
 
             if (isc.RPCManager) {
-                isc.RPCManager.addClassProperties({ 
-                    promptStyle:"cursor" 
+                isc.RPCManager.addClassProperties({
+                    promptStyle:"cursor"
                 });
             }
-            
+
             //----------------------------------------
             // 1) Scrollbars
             //----------------------------------------
             isc.SimpleScrollThumb.addProperties({
+                imageWidth:10, imageHeight:10,
                 baseStyle:"scrollThumb",
                 hSrc:"[SKIN]hthumb_grip.png",
                 vSrc:"[SKIN]vthumb_grip.png"
             });
-            
+            if (useSpriting) {
+                isc.SimpleScrollThumb.addProperties({
+                    hSrc: "[SKINIMG]/blank.gif",
+                    vSrc: "[SKINIMG]/blank.gif",
+                    gripImgSuffix: "",
+                    redrawOnStateChange: true
+                });
+                isc.VSimpleScrollThumb.addProperties({
+                    imageStyle: "vScrollThumbGrip"
+                });
+                isc.HSimpleScrollThumb.addProperties({
+                    imageStyle: "hScrollThumbGrip"
+                });
+            }
+
             isc.Scrollbar.addProperties({
                 baseStyle:"scrollbar",
                 btnSize:18,
                 hSrc:"[SKIN]hscroll.png",
                 hThumbClass:isc.HSimpleScrollThumb,
-                showRollOver:true,
                 thumbInset:0,
                 thumbMinSize:20,
                 thumbOverlap:2,
                 vSrc:"[SKIN]vscroll.png",
                 vThumbClass:isc.VSimpleScrollThumb
             });
-            
-            
+            isc.Scrollbar.changeDefaults("trackImg", {
+                name:"blank",
+                baseStyleKey:"vertical",
+                baseStyleMap:{
+                    "true": "vScrollTrack",
+                    "false": "hScrollTrack"
+                },
+                baseStyle:"scrollTrack"
+            });
+            isc.Scrollbar.changeDefaults("cornerImg", { name:"blank0", baseStyle:"scrollCorner" });
+
+
             //----------------------------------------
             // 2) Buttons
             //----------------------------------------
@@ -92,7 +114,7 @@ isc.loadSkin = function (theWindow) {
             isc.ClassFactory.defineClass("IAutoFitButton", "AutoFitButton").addProperties({
                 baseStyle:"buttonRounded"
             });
-            
+
             if (isc.IButton.markAsFrameworkClass != null) isc.IButton.markAsFrameworkClass();
             if (isc.IAutoFitButton.markAsFrameworkClass != null) isc.IAutoFitButton.markAsFrameworkClass();
 
@@ -103,13 +125,21 @@ isc.loadSkin = function (theWindow) {
             // Have IMenuButton be just a synonym for IMenuButton
             if (isc.MenuButton) {
                 isc.ClassFactory.overwriteClass("IMenuButton", "MenuButton");
-                
+
                 if (isc.IMenuButton.markAsFrameworkClass != null) isc.IMenuButton.markAsFrameworkClass();
-                
+
                 isc.MenuButton.addProperties({
                     // copy the header (.button) background-color to match when sort arrow is hidden
                     baseStyle:"button"
                 });
+                
+                if (isc.ITreeMenuButton) {
+                    isc.ClassFactory.overwriteClass("ITreeMenuButton", "TreeMenuButton");
+                    if (isc.ITreeMenuButton.markAsFrameworkClass != null) {
+                        isc.ITreeMenuButton.markAsFrameworkClass();
+                    }                    
+                }
+
             }
 
             if (isc.MenuButton) {
@@ -122,7 +152,7 @@ isc.loadSkin = function (theWindow) {
                     showFocusedAsOver:true
                 });
             }
-            
+
             if (isc.IMenuButton) {
                 isc.IMenuButton.addProperties({
                     capSize:4,
@@ -155,12 +185,12 @@ isc.loadSkin = function (theWindow) {
                     submenuDisabledImage:{src:"[SKIN]submenu_disabled.png", height:7, width:4},
                     submenuImage:{src:"[SKIN]submenu.png", height:7, width:4}
                 });
-                
+
                 isc.addProperties(isc.Menu.ICON_FIELD, {
                     baseStyle:"menuIconField",
                     width:24
                 });
-                
+
                 isc.Menu.TITLE_FIELD.baseStyle = "menuTitleField";
             }
 
@@ -202,11 +232,12 @@ isc.loadSkin = function (theWindow) {
 
             isc.Layout.addProperties({
                 resizeBarSize:5,
-                // Use the Snapbar as a resizeBar by default - subclass of Splitbar that 
+                // Use the Snapbar as a resizeBar by default - subclass of Splitbar that
                 // shows interactive (closed/open) grip images
                 // Other options include the Splitbar, StretchImgSplitbar or ImgSplitbar
                 resizeBarClass:"Snapbar"
             })
+
 
             if (isc.SectionItem) {
                 isc.SectionItem.addProperties({
@@ -223,7 +254,7 @@ isc.loadSkin = function (theWindow) {
                 isc.ListGrid.addProperties({
                     alternateRecordStyles:true,
                     alternateBodyStyleName:null,
-                    backgroundColor:"#e7e7e7",
+                    backgroundColor:null,
                     cellHeight:22,
                     checkboxFieldImageHeight:13,
                     checkboxFieldImageWidth:13,
@@ -247,9 +278,14 @@ isc.loadSkin = function (theWindow) {
                     normalCellHeight:22,
                     showHeaderMenuButton:true,
                     sortAscendingImage:{src:"[SKINIMG]ListGrid/sort_ascending.png", width:9, height:6},
-                    sortDescendingImage:{src:"[SKINIMG]ListGrid/sort_descending.png", width:9, height:6}, 
+                    sortDescendingImage:{src:"[SKINIMG]ListGrid/sort_descending.png", width:9, height:6},
                     summaryRowHeight:21,
                     tallBaseStyle:"tallCell"
+                });
+
+                isc.ListGrid.changeDefaults("sorterDefaults", {
+                    baseStyle:"sorterButton",
+                    showRollOver:false
                 });
             }
 
@@ -257,14 +293,28 @@ isc.loadSkin = function (theWindow) {
                 isc.TreeGrid.addProperties({
                     alternateRecordStyles:false,
                     folderIcon:"[SKIN]folder.png",
-                    manyItemsImage:"[SKIN]folder_file.png",        
+                    manyItemsImage:"[SKIN]folder_file.png",
                     nodeIcon:"[SKIN]file.png",
                     normalBaseStyle:"treeCell",
+                    applyRowNumberStyle:false,
                     openerIconSize:22,
                     openerImage:"[SKIN]opener.png",
                     sortAscendingImage:{src:"[SKINIMG]ListGrid/sort_ascending.png", width:9, height:6},
-                    sortDescendingImage:{src:"[SKINIMG]ListGrid/sort_descending.png", width:9, height:6},   
+                    sortDescendingImage:{src:"[SKINIMG]ListGrid/sort_descending.png", width:9, height:6},
                     tallBaseStyle:"treeTallCell"
+                });
+            }
+            
+            if (isc.MultiSortPanel) {
+                isc.MultiSortPanel.changeDefaults("levelUpButtonDefaults", {
+                    height:22,
+                    src:"[SKINIMG]TransferIcons/up.png",
+                    width:24
+                });
+                isc.MultiSortPanel.changeDefaults("levelDownButtonDefaults", {
+                    height:22,
+                    src:"[SKINIMG]TransferIcons/down.png",
+                    width:24
                 });
             }
 
@@ -282,6 +332,7 @@ isc.loadSkin = function (theWindow) {
                     symmetricScroller:false,
                     symmetricPickerButton:false,
                     tabBarThickness:24,
+                    defaultTabHeight:24,
                     useSimpleTabs:true
                 });
 
@@ -308,7 +359,7 @@ isc.loadSkin = function (theWindow) {
             }
 
             if (isc.ImgTab) isc.ImgTab.addProperties({capSize:6});
-            
+
             if (isc.Window) {
                 isc.Window.addProperties({
                     backgroundColor:null,
@@ -323,20 +374,20 @@ isc.loadSkin = function (theWindow) {
                     showHeaderBackground:false,
                     showFooter:false
                 });
-                
+
                 isc.Window.changeDefaults("headerDefaults", {
                     height:20,
                     layoutMargin:0
                 });
-                
+
                 isc.Window.changeDefaults("resizerDefaults", { src:"[SKIN]/Window/resizer.png" });
-                
+
                 isc.Window.changeDefaults("headerIconDefaults", {
                     height:15,
                     src:"[SKIN]/Window/headerIcon.png",
                     width:15
                 });
-                
+
                 isc.Window.changeDefaults("restoreButtonDefaults", {
                     height:15,
                     showDown:false,
@@ -344,7 +395,7 @@ isc.loadSkin = function (theWindow) {
                     src:"[SKIN]/headerIcons/cascade.png",
                     width:15
                 });
-                
+
                 isc.Window.changeDefaults("closeButtonDefaults", {
                     height:15,
                     showDown:false,
@@ -352,14 +403,14 @@ isc.loadSkin = function (theWindow) {
                     src:"[SKIN]/headerIcons/close.png",
                     width:15
                 });
-                
+
                 isc.Window.changeDefaults("maximizeButtonDefaults", {
                     height:15,
                     showRollOver:true,
                     src:"[SKIN]/headerIcons/maximize.png",
                     width:15
                 });
-                
+
                 isc.Window.changeDefaults("minimizeButtonDefaults", {
                     height:15,
                     showDown:false,
@@ -367,14 +418,14 @@ isc.loadSkin = function (theWindow) {
                     src:"[SKIN]/headerIcons/minimize.png",
                     width:15
                 });
-                
+
                 isc.Window.changeDefaults("toolbarDefaults", { buttonConstructor:"IButton" });
 
                 if (isc.ColorPicker) {
                     isc.ColorPicker.addProperties({
                         layoutMargin:2
                     });
-                }       
+                }
             }
 
             if (isc.Dialog) {
@@ -391,7 +442,7 @@ isc.loadSkin = function (theWindow) {
                     showHeaderBackground:false,
                     showFooter:false
                 });
-                
+
                 // even though Dialog inherits from Window, we need a separate changeDefaults block
                 // because Dialog defines its own toolbarDefaults
                 isc.Dialog.changeDefaults("toolbarDefaults", {
@@ -399,7 +450,7 @@ isc.loadSkin = function (theWindow) {
                     height:42, // 10px margins + 22px button
                     membersMargin:10
                 });
-                
+
                 if (isc.Dialog.Warn && isc.Dialog.Warn.toolbarDefaults) {
                     isc.addProperties(isc.Dialog.Warn.toolbarDefaults, {
                         buttonConstructor:"IButton",
@@ -407,6 +458,20 @@ isc.loadSkin = function (theWindow) {
                         membersMargin:10
                     });
                 }
+                            
+                // Modify the prompt dialog to show a header
+                // In the css3-off mode header media is part of the background image, so
+                // a header appears to show even though there's no true header widget.
+                if (isc.Dialog.Prompt) {
+                    isc.addProperties(isc.Dialog.Prompt, {
+                        showHeader:true,
+                        showTitle:false,
+                        showCloseButton:false,
+                        bodyStyle:"windowBody"
+                        
+                    });
+                }
+
             }
 
             // Dynamic form skinning
@@ -415,7 +480,7 @@ isc.loadSkin = function (theWindow) {
                     icon:"[SKIN]/SectionHeader/opener.png"
                 });
             }
-            
+
             if (isc.FormItem) {
                 isc.FormItem.addProperties({
                     defaultIconSrc:"[SKIN]/DynamicForm/default_formItem_icon.png",
@@ -425,7 +490,7 @@ isc.loadSkin = function (theWindow) {
                     iconWidth:18
                 });
             }
-            
+
             if (isc.CheckboxItem) {
                 isc.CheckboxItem.addProperties({
                     checkedImage:"[SKINIMG]/DynamicForm/checked.png",
@@ -438,7 +503,7 @@ isc.loadSkin = function (theWindow) {
                     valueIconHeight:13
                 });
             }
-            
+
             if (isc.TextItem) {
                 isc.TextItem.addProperties({
                     height:22,
@@ -480,7 +545,7 @@ isc.loadSkin = function (theWindow) {
                 showShadow:false
                 });
             }
-            
+
             if (isc.DateItem) {
                 isc.DateItem.addProperties({
                     height:22,
@@ -495,37 +560,42 @@ isc.loadSkin = function (theWindow) {
                     height:22,
                     textBoxStyle:"selectItemText"
                 });
-                
-                isc.SpinnerItem.INCREASE_ICON = isc.addProperties(isc.SpinnerItem.INCREASE_ICON, 
+
+                isc.SpinnerItem.INCREASE_ICON = isc.addProperties(isc.SpinnerItem.INCREASE_ICON,
                 {
                     height:11,
                     imgOnly:true,
                     showDown:false,
                     showFocused:false,
-                    showRollOver:false,
                     src:"[SKIN]/DynamicForm/spinner_control_increase.png",
                     width:16
                 });
-                
-                isc.SpinnerItem.DECREASE_ICON = isc.addProperties(isc.SpinnerItem.DECREASE_ICON, 
+
+                isc.SpinnerItem.DECREASE_ICON = isc.addProperties(isc.SpinnerItem.DECREASE_ICON,
                 {
                     height:11,
                     imgOnly:true,
                     showDown:false,
                     showFocused:false,
-                    showRollOver:false,
                     src:"[SKIN]/DynamicForm/spinner_control_decrease.png",
                     width:16
                 });
             }
-            
+
             if (isc.PopUpTextAreaItem) {
                 isc.PopUpTextAreaItem.addProperties({
                     popUpIconHeight:16,
-                    popUpIconSrc:"[SKIN]/DynamicForm/text_control.png",
+                    popUpIconSrc:"[SKIN]/DynamicForm/text_control.gif",
                     popUpIconWidth:16
                 });
             }
+            if (isc.ButtonItem && isc.IButton) {isc.ButtonItem.addProperties({
+                showFocused:true,
+                showFocusAsOver:false,
+                buttonConstructor:isc.IButton,
+                height:22
+            })}
+
 
             if (isc.ToolbarItem && isc.IAutoFitButton) {
                 isc.ToolbarItem.addProperties({
@@ -537,11 +607,11 @@ isc.loadSkin = function (theWindow) {
             if (isc.DateRangeDialog) {
                 isc.DateRangeDialog.changeDefaults("headerIconProperties", { src:"[SKIN]/DynamicForm/date_control.png" });
             }
-            
+
             if (isc.MiniDateRangeItem) {
                 isc.MiniDateRangeItem.changeDefaults("pickerIconDefaults", { src:"[SKIN]/DynamicForm/date_control.png" });
             }
-            
+
             if (isc.RelativeDateItem) {
                 isc.RelativeDateItem.changeDefaults("pickerIconDefaults", { src:"[SKIN]/DynamicForm/date_control.png" });
             }
@@ -557,11 +627,11 @@ isc.loadSkin = function (theWindow) {
             if (isc.DateChooser) {
                 isc.DateChooser.addProperties({
                     alternateWeekStyles:false,
-                    backgroundColor:"#FFFFFF",
+                    backgroundColor:null,
                     baseNavButtonStyle:"dateChooserNavButton",
                     baseWeekdayStyle:"dateChooserWeekday",
                     baseWeekendStyle:"dateChooserWeekend",
-                    baseBottomButtonStyle:"dateChooserBottomButton",
+                    baseBottomButtonStyle:"dateChooserBorderedBottomButton",
                     edgeCenterBackgroundColor:"#FFFFFF",
                     headerStyle:"dateChooserButton",
                     nextMonthIcon:"[SKINIMG]/DateChooser/arrow_right.png",
@@ -590,10 +660,6 @@ isc.loadSkin = function (theWindow) {
                     defaultLayoutAlign:"center",
                     height:30
                 });
-                
-                isc.ToolStripResizer.addProperties({
-                    backgroundColor:"#f6f6f6"
-                });
 
                 isc.ToolStrip.changeDefaults("formWrapperDefaults",{cellPadding:3});
             }
@@ -602,7 +668,7 @@ isc.loadSkin = function (theWindow) {
                 
                 isc.overwriteClass("ToolStripMenuButton", "MenuButton").addProperties({
                     autoFit:true,
-                    baseStyle:"toolbarButton",
+                    baseStyle:"toolStripButton",
                     height:22,
                     labelVPad:0,
                     showDown:true,
@@ -615,7 +681,7 @@ isc.loadSkin = function (theWindow) {
                 
                 isc.overwriteClass("ToolStripButton", "Button").addProperties({
                     autoFit:true,
-                    baseStyle:"toolbarButton",
+                    baseStyle:"toolStripButton",
                     height:22,
                     labelVPad:0,
                     showTitle:false,
@@ -625,11 +691,11 @@ isc.loadSkin = function (theWindow) {
                 });
             }
 
-            if (isc.RichTextEditor) {
-                isc.RichTextEditor.addProperties({
-                    showEdges:false,
-                    styleName:"richTextEditorBorder"
-                });
+            if (isc.EdgedCanvas) {
+                isc.EdgedCanvas.addProperties({
+                    edgeSize:3,
+                    edgeImage: "[SKINIMG]edges/edge.png"
+                })
             }
 
             if (isc.Slider) {
@@ -639,13 +705,12 @@ isc.loadSkin = function (theWindow) {
                     thumbConstructor:"StatefulCanvas",
                     thumbThickWidth:14,
                     thumbThinWidth:14,
-                    trackConstructor:"Canvas",
+                    trackConstructor:"StatefulCanvas",
                     trackWidth:5,
                     vThumbStyle:"vSliderThumb",
                     vTrackStyle:"vSliderTrack"
                 });
             }
-
 
             if (isc.TileGrid) {
                 isc.TileGrid.addProperties({
@@ -666,6 +731,14 @@ isc.loadSkin = function (theWindow) {
                     height:10,
                     layoutBottomMargin:10
                 });
+                
+                isc.EventWindow.changeDefaults("resizerDefaults", {
+                    src:"[SKIN]/Window/v_resizer.png"
+                });
+                isc.TimelineWindow.changeDefaults("resizerDefaults", {
+                    src:"[SKIN]/Window/h_resizer.png"
+                })
+
             }
 
             if (isc.Hover) {
@@ -676,13 +749,13 @@ isc.loadSkin = function (theWindow) {
             }
 
             //indicate type of media used for various icon types
-            isc.pickerImgType = "gif";
-            isc.transferImgType = "gif";
-            isc.headerImgType = "gif";
+            isc.pickerImgType = "png";
+            isc.transferImgType = "png";
+            isc.headerImgType = "png";
 
             isc.Page.checkBrowserAndRedirect("[SKIN]/unsupported_browser.html");
 
-        } else {
+        } else { // useCSS3 is false
 
             //============================================================
             //  Component Skinning
@@ -712,19 +785,19 @@ isc.loadSkin = function (theWindow) {
             //============================================================
 
             isc.Canvas.addProperties({
-                groupBorderCSS:"1px solid #A7ABB4"
+                groupBorderCSS:"1px solid #165fa7"
             });
 
-            if(isc.Browser.isIE && isc.Browser.version >= 7) {
+            if(isc.Browser.isIE && isc.Browser.version >= 7 && !isc.Browser.isIE9) {
                 isc.Canvas.setAllowExternalFilters(false);
                 isc.Canvas.setNeverUseFilters(true);
-                
+
                 if(isc.Window) {
                     isc.Window.addProperties({
                         modalMaskOpacity:null,
                         modalMaskStyle:"normal"
                     });
-                    
+
                     isc.Window.changeDefaults("modalMaskDefaults", { src:"[SKIN]opacity.png" });
                 }
             }
@@ -741,28 +814,51 @@ isc.loadSkin = function (theWindow) {
                 scrollbarSize:16,
                 showCustomScrollbars:true
             });
-            
+
             isc.ScrollThumb.addProperties({
                 backgroundColor:"transparent",
                 capSize:2,
-                gripBreadth:10,        
+                gripBreadth:10,
                 gripLength:10,
                 hSrc:"[SKIN]hthumb.png",
                 showGrip:true,
+                showRollOverGrip:true,
+                showDownGrip:true,
                 showRollOver:true,
+                showDown:true,
                 vSrc:"[SKIN]vthumb.png"
             });
-            
+
             isc.Scrollbar.addProperties({
                 backgroundColor:"#FFFFFF",
                 btnSize:18,
                 hSrc:"[SKIN]hscroll.png",
-                showRollOver:true,
                 thumbInset:0,
                 thumbMinSize:20,
                 thumbOverlap:2,
                 vSrc:"[SKIN]vscroll.png"
             });
+
+            if (useSpriting) {
+                isc.Scrollbar.changeDefaults("trackImg", {
+                    name: "blank5",
+                    baseStyleKey: "vertical",
+                    baseStyleMap: {
+                        "true": "vScrollTrackStretch",
+                        "false": "hScrollTrackStretch"
+                    },
+                    baseStyle:"scrollTrackStretch"
+                });
+                isc.Scrollbar.changeDefaults("cornerImg", {
+                    name:"blank0",
+                    baseStyleKey: "vertical",
+                    baseStyleMap: {
+                        "true": "vScrollCorner",
+                        "false": "hScrollCorner"
+                    },
+                    baseStyle:"scrollCorner"
+                });
+            }
 
             //----------------------------------------
             // 2) Buttons
@@ -788,7 +884,7 @@ isc.loadSkin = function (theWindow) {
                 autoFit:true,
                 autoFitDirection:isc.Canvas.HORIZONTAL
             });
-            
+
             if (isc.IButton.markAsFrameworkClass != null) isc.IButton.markAsFrameworkClass();
             if (isc.IAutoFitButton.markAsFrameworkClass != null) isc.IAutoFitButton.markAsFrameworkClass();
 
@@ -797,11 +893,8 @@ isc.loadSkin = function (theWindow) {
                 showFocusedAsOver:true
             });
 
-            isc.defineClass("HeaderImgButton", "ImgButton").addProperties({
-                showDown:false,
-                showFocused:false,
-                showFocusedAsOver:false,
-                showRollOver:false
+            isc.defineClass("HeaderMenuButton", "Button").addProperties({
+                baseStyle:"imgHeaderButton"
             });
 
             isc.Button.addProperties({
@@ -817,7 +910,7 @@ isc.loadSkin = function (theWindow) {
             //----------------------------------------
             // 3) Resizebars
             //----------------------------------------
-            // StretchImgSplitbar class renders as resize bar with 
+            // StretchImgSplitbar class renders as resize bar with
             // end caps, body, grip
             isc.StretchImgSplitbar.addProperties({
                 capSize:10,
@@ -826,7 +919,7 @@ isc.loadSkin = function (theWindow) {
 
             // ImgSplitbar renders as resizebar with resize grip only
             isc.ImgSplitbar.addProperties({
-            
+
             });
 
             isc.Snapbar.addProperties({
@@ -845,7 +938,7 @@ isc.loadSkin = function (theWindow) {
 
             isc.Layout.addProperties({
                 resizeBarSize:5,
-                // Use the Snapbar as a resizeBar by default - subclass of Splitbar that 
+                // Use the Snapbar as a resizeBar by default - subclass of Splitbar that
                 // shows interactive (closed/open) grip images
                 // Other options include the Splitbar, StretchImgSplitbar or ImgSplitbar
                 resizeBarClass:"Snapbar"
@@ -867,7 +960,7 @@ isc.loadSkin = function (theWindow) {
                     headerHeight:26,
                     sectionHeaderClass:"ImgSectionHeader"
                 });
-                
+
                 isc.ImgSectionHeader.changeDefaults("backgroundDefaults", {
                     baseStyle:"imgSectionHeader",
                     backgroundColor:"transparent",
@@ -881,7 +974,7 @@ isc.loadSkin = function (theWindow) {
                     src:"[SKIN]SectionHeader/header.png",
                     titleStyle:"imgSectionHeaderTitle"
                 });
-                
+
                 isc.SectionHeader.addProperties({
                     icon:"[SKIN]SectionHeader/opener.png",
                     iconSize:16
@@ -930,16 +1023,17 @@ isc.loadSkin = function (theWindow) {
                     showScrollerRollOver:false,
                     symmetricPickerButton:false,
                     symmetricScroller:false,
-                    tabBarThickness:24
+                    tabBarThickness:24,
+                    defaultTabHeight:24
                 });
-                
+
                 isc.TabSet.changeDefaults("paneContainerDefaults", {
                     showEdges:false
                 });
-                
+
                 isc.TabBar.addProperties({
                     baseLineConstructor:"Canvas",
-                    baseLineProperties:{ 
+                    baseLineProperties:{
                         backgroundColor:"#C0C3C7",
                         height:1,
                         overflow:"hidden"
@@ -949,8 +1043,8 @@ isc.loadSkin = function (theWindow) {
                     membersMargin:1,
                     styleName:"tabBar"
                 });
-            }    
-            
+            }
+
             if (isc.ImgTab) {
                 isc.ImgTab.addProperties({
                     capSize:6,
@@ -999,7 +1093,7 @@ isc.loadSkin = function (theWindow) {
                     layoutMargin:0,
                     height:20
                 });
-                
+
                 isc.Window.changeDefaults("resizerDefaults", {
                     src:"[SKIN]/Window/resizer.png"
                 });
@@ -1009,7 +1103,7 @@ isc.loadSkin = function (theWindow) {
                     src:"[SKIN]/Window/headerIcon.png",
                     width:15
                 });
-                
+
                 isc.Window.changeDefaults("restoreButtonDefaults", {
                     height:15,
                     showDown:false,
@@ -1017,30 +1111,30 @@ isc.loadSkin = function (theWindow) {
                     src:"[SKIN]/headerIcons/cascade.png",
                     width:15
                 });
-                
-                isc.Window.changeDefaults("closeButtonDefaults", { 
+
+                isc.Window.changeDefaults("closeButtonDefaults", {
                     height:15,
                     showDown:false,
                     showRollOver:true,
                     src:"[SKIN]/headerIcons/close.png",
                     width:15
                 });
-                
-                isc.Window.changeDefaults("maximizeButtonDefaults", { 
+
+                isc.Window.changeDefaults("maximizeButtonDefaults", {
                     height:15,
                     showRollOver:true,
                     src:"[SKIN]/headerIcons/maximize.png",
                     width:15
                 });
-                
-                isc.Window.changeDefaults("minimizeButtonDefaults", { 
+
+                isc.Window.changeDefaults("minimizeButtonDefaults", {
                     height:15,
                     showDown:false,
                     showRollOver:true,
                     src:"[SKIN]/headerIcons/minimize.png",
                     width:15
                 });
-                
+
                 isc.Window.changeDefaults("toolbarDefaults", {
                     buttonConstructor:"IButton"
                 });
@@ -1078,7 +1172,7 @@ isc.loadSkin = function (theWindow) {
                         showShadow:false,
                         styleName:"normal"
                     });
-                    
+
                     // even though Dialog inherits from Window, we need a separate changeDefaults block
                     // because Dialog defines its own toolbarDefaults
                     isc.Dialog.changeDefaults("toolbarDefaults", {
@@ -1086,7 +1180,7 @@ isc.loadSkin = function (theWindow) {
                         height:42, // 10px margins + 22px button
                         membersMargin:10
                     });
-                    
+
                     if (isc.Dialog.Warn && isc.Dialog.Warn.toolbarDefaults) {
                         isc.addProperties(isc.Dialog.Warn.toolbarDefaults, {
                             buttonConstructor:"IButton",
@@ -1110,21 +1204,21 @@ isc.loadSkin = function (theWindow) {
                 showEdges:true,
                 showShadow:false
             }
-            
+
             if (isc.ButtonTable) {
                 isc.ButtonTable.addProperties({
                     backgroundColor:"#FFFFFF"
                 });
             }
-            
+
             if (isc.FormItem) {
                 isc.FormItem.changeDefaults("pickerDefaults", isc.__pickerDefaults);
-                
+
                 isc.FormItem.addProperties({
                     defaultIconSrc:"[SKIN]/DynamicForm/default_formItem_icon.png"
                 });
             }
-            
+
             if (isc.CheckboxItem) {
                 isc.CheckboxItem.addProperties({
                     checkedImage:"[SKINIMG]/DynamicForm/checked.png",
@@ -1137,38 +1231,45 @@ isc.loadSkin = function (theWindow) {
                     valueIconWidth:13
                 });
             }
-            
+
             if(isc.RelationItem) {
                 isc.RelationItem.changeDefaults("removeButtonDefaults", {
                     src:"[SKIN]DynamicForm/Remove_icon.png"
                 });
             }
-
+            
             if (isc.DateChooser) {
+                isc.DateChooser.changeDefaults("dateGridDefaults", {
+                    headerButtonConstructor:"Button",
+                    headerButtonProperties:{showTitle:false}
+                });
+            
                 isc.DateChooser.addProperties({
                     alternateWeekStyles:false,
                     backgroundColor:null,
-                    baseBottomButtonStyle:"dateChooserBottomButton",
+                    baseBottomButtonStyle:"dateChooserBorderedBottomButton",
+                    bottomButtonConstructor:"Button",
                     baseNavButtonStyle:"dateChooserNavButton",
                     baseWeekdayStyle:"dateChooserWeekday",
                     baseWeekendStyle:"dateChooserWeekend",
-                    edgeBottom:5,
-                    edgeCenterBackgroundColor:"#FFFFFF",
+                    edgeBottom:3,
+                    edgeCenterBackgroundColor:"#BDD8FF",
                     edgeImage:"[SKINIMG]Window/window.png",
                     edgeOffsetTop:1,
-                    edgeOffsetRight:5,
-                    edgeOffsetLeft:5,
+                    edgeOffsetRight:3,
+                    edgeOffsetLeft:3,
                     edgeOffsetBottom:5,
-                    edgeSize:6,
+                    edgeSize:3,
                     edgeTop:26,
                     headerHeight:24,
                     headerStyle:"dateChooserButton",
+                    navButtonConstructor:"Button",
                     nextMonthIcon:"[SKIN]arrow_right.png",
                     nextMonthIconHeight:16,
                     nextMonthIconWidth:16,
                     nextYearIcon:"[SKIN]doubleArrow_right.png",
                     nextYearIconHeight:16,
-                    nextYearIconWidth:16,    
+                    nextYearIconWidth:16,
                     prevMonthIcon:"[SKIN]arrow_left.png",
                     prevMonthIconHeight:16,
                     prevMonthIconWidth:16,
@@ -1185,16 +1286,16 @@ isc.loadSkin = function (theWindow) {
                     weekendHeaderStyle:"dateChooserWeekendButton"
                 });
             }
-            
+
             if (isc.MultiFilePicker) {
                 isc.MultiFilePicker.addProperties({
                     backgroundColor:"#C7C7C7"
                 });
             }
-            
+
             if (isc.RelationPicker) {
                 isc.RelationPicker.addProperties({
-                    backgroundColor:"#C7C7C7"  
+                    backgroundColor:"#C7C7C7"
                 });
             }
 
@@ -1205,7 +1306,7 @@ isc.loadSkin = function (theWindow) {
                     textBoxStyle:"normal"
                 });
             }
-            
+
             //----------------------------------------
             // 10) Menus
             //----------------------------------------
@@ -1224,12 +1325,12 @@ isc.loadSkin = function (theWindow) {
                     submenuDisabledImage:{src:"[SKIN]submenu_disabled.png", height:7, width:4},
                     submenuImage:{src:"[SKIN]submenu.png", height:7, width:4}
                 });
-                
+
                 isc.addProperties(isc.Menu.ICON_FIELD, {
                     baseStyle:"menuIconField",
                     width:24
                 });
-                
+
                 isc.Menu.TITLE_FIELD.baseStyle = "menuTitleField";
             }
 
@@ -1243,7 +1344,7 @@ isc.loadSkin = function (theWindow) {
                     showFocusedAsOver:true
                 });
             }
-            
+
             if (isc.IMenuButton) {
                 isc.IMenuButton.addProperties({
                     capSize:4,
@@ -1283,11 +1384,11 @@ isc.loadSkin = function (theWindow) {
             //----------------------------------------
             // 12) ListGrids
             //----------------------------------------
-            if (isc.ListGrid) {										  
+            if (isc.ListGrid) {
                 isc.ListGrid.addProperties({
                     alternateBodyStyleName:null,
                     alternateRecordStyles:true,
-                    backgroundColor:null, 
+                    backgroundColor:null,
                     bodyBackgroundColor:null,
                     bodyStyleName:"gridBody",
                     cellHeight:22,
@@ -1298,46 +1399,39 @@ isc.loadSkin = function (theWindow) {
                     expansionFieldTrueImage:"[SKINIMG]/ListGrid/row_expanded.png",
                     expansionFieldFalseImage:"[SKINIMG]/ListGrid/row_collapsed.png",
                     groupIcon:"[SKINIMG]/ListGrid/group.png",
-                    groupIconPadding:3,            
+                    groupIconPadding:3,
                     groupLeadingIndent:1,
                     headerBackgroundColor:null,
                     headerBarStyle:"headerBar",
-                    headerBaseStyle:"headerButton",	// bgcolor tint and borders
-                    headerButtonConstructor:"ImgButton",
+                    headerBaseStyle:"imgHeaderButton",	// bgcolor tint and borders
                     headerHeight:23,
-                    headerMenuButtonConstructor:"HeaderImgButton",
+                    headerMenuButtonConstructor:"HeaderMenuButton",
                     headerMenuButtonIcon:"[SKINIMG]/ListGrid/sort_descending.png",
-                    headerMenuButtonIconWidth: 9,
                     headerMenuButtonIconHeight: 6,
-                    headerMenuButtonSrc:"[SKIN]/ListGrid/header_menu.png",
+                    headerMenuButtonIconWidth: 9,
                     headerMenuButtonWidth:17,
                     headerTitleStyle:"headerTitle",
                     normalCellHeight:22,
+                    showHeaderMenuButton:true,
                     sortAscendingImage:{src:"[SKIN]sort_ascending.png", width:9, height:6},
                     sortDescendingImage:{src:"[SKIN]sort_descending.png", width:9, height:6},
-                    sorterConstructor:"ImgButton",
-                    showHeaderMenuButton:true,
                     summaryRowHeight:21,
+                    summaryRowStyle: "gridSummaryCell",
                     tallBaseStyle:"tallCell"
                 });
-                
-                isc.ListGrid.changeDefaults("sorterDefaults", { 
+
+                isc.ListGrid.changeDefaults("sorterDefaults", {
                     baseStyle:"sorterButton",
-                    showFocused:false,
-                    src:"[SKIN]ListGrid/header.png"
+                    showRollOver:false
                 });
-                
+
                 isc.ListGrid.changeDefaults("headerButtonDefaults", {
                     showDown:false,
-                    showFocused:false,
-                    showTitle:true,
-                    src:"[SKIN]ListGrid/header.png"
+                    showFocused:false
                 });
-                
+
                 isc.ListGrid.changeDefaults("headerMenuButtonDefaults", {
-                    showDown:false,
-                    showTitle:true,
-                    src:"[SKIN]ListGrid/header.png"
+                    showDown:false
                 });
             }
 
@@ -1345,14 +1439,15 @@ isc.loadSkin = function (theWindow) {
                 isc.TreeGrid.addProperties({
                     alternateRecordStyles:false,
                     normalBaseStyle:"treeCell",
+                    applyRowNumberStyle:false,
                     openerImage:"[SKIN]opener.png",
                     sortAscendingImage:{src:"[SKINIMG]ListGrid/sort_ascending.png", width:9, height:6},
-                    sortDescendingImage:{src:"[SKINIMG]ListGrid/sort_descending.png", width:9, height:6},            
+                    sortDescendingImage:{src:"[SKINIMG]ListGrid/sort_descending.png", width:9, height:6},
                     tallBaseStyle:"treeTallCell"
                 });
             }
 
-            if(isc.MultiSortPanel) {
+            if (isc.MultiSortPanel) {
                 isc.MultiSortPanel.changeDefaults("levelUpButtonDefaults", {
                     height:22,
                     src:"[SKINIMG]TransferIcons/up.png",
@@ -1364,7 +1459,7 @@ isc.loadSkin = function (theWindow) {
                     width:24
                 });
             }
-            
+
             //----------------------------------------
             // 13) TreeGrids
             //----------------------------------------
@@ -1376,7 +1471,7 @@ isc.loadSkin = function (theWindow) {
                     openerIconSize:22
                 });
             }
-            
+
             if (isc.ColumnTree) {
                 isc.ColumnTree.addProperties({
                     folderIcon:"[SKIN]folder.png",
@@ -1412,16 +1507,15 @@ isc.loadSkin = function (theWindow) {
 
             if (isc.TextAreaItem) {
                 isc.TextAreaItem.addProperties({
-                    showFocused:true     
+                    showFocused:true
                 });
             }
 
             if (isc.SelectItem) {
-                isc.SelectItem.addProperties({   
+                isc.SelectItem.addProperties({
                     height:22,
                     pickerIconSrc:"[SKIN]/pickers/comboBoxPicker.png",
                     pickerIconWidth:18,
-                    pickListTallBaseStyle:"tallPickListCell",
                     showFocusedPickerIcon:false,
                     textBoxStyle:"selectItemText"
                 });
@@ -1433,7 +1527,6 @@ isc.loadSkin = function (theWindow) {
                     pendingTextBoxStyle:"comboBoxItemPendingText",
                     pickerIconSrc:"[SKIN]/pickers/comboBoxPicker.png",
                     pickerIconWidth:18,
-                    pickListTallBaseStyle:"tallPickListCell",
                     showFocusedPickerIcon:false,
                     textBoxStyle:"selectItemText"
                 });
@@ -1444,9 +1537,9 @@ isc.loadSkin = function (theWindow) {
                 isc.ScrollingMenu.addProperties({
                     shadowDepth:5,
                     showShadow:false
-                });  
+                });
             }
-            
+
             if (isc.DateItem) {
                 isc.DateItem.addProperties({
                     height:22,
@@ -1455,29 +1548,27 @@ isc.loadSkin = function (theWindow) {
                     pickerIconWidth:16
                 });
             }
-            
+
             if (isc.SpinnerItem) {
                 isc.SpinnerItem.addProperties({
                     height:22,
                     textBoxStyle:"selectItemText"
                 });
-                
+
                 isc.SpinnerItem.INCREASE_ICON = isc.addProperties(isc.SpinnerItem.INCREASE_ICON, {
                     height:11,
                     imgOnly:true,
                     showDown:true,
                     showFocused:true,
-                    showRollOver:true,
                     src:"[SKIN]/DynamicForm/spinner_control_increase.png",
                     width:16
                 });
-                
+
                 isc.SpinnerItem.DECREASE_ICON = isc.addProperties(isc.SpinnerItem.DECREASE_ICON, {
                     height:11,
                     imgOnly:true,
                     showDown:true,
                     showFocused:true,
-                    showRollOver:true,
                     src:"[SKIN]/DynamicForm/spinner_control_decrease.png",
                     width:16
                 });
@@ -1490,7 +1581,7 @@ isc.loadSkin = function (theWindow) {
                     popUpIconWidth:16
                 });
             }
-            
+
             if (isc.ButtonItem && isc.IButton) {
                 isc.ButtonItem.addProperties({
                     buttonConstructor:isc.IButton,
@@ -1510,11 +1601,11 @@ isc.loadSkin = function (theWindow) {
             if(isc.DateRangeDialog) {
                 isc.DateRangeDialog.changeDefaults("headerIconProperties", { src:"[SKIN]/DynamicForm/date_control.png" });
             }
-            
+
             if(isc.MiniDateRangeItem) {
                 isc.MiniDateRangeItem.changeDefaults("pickerIconDefaults", { src:"[SKIN]/DynamicForm/date_control.png" });
             }
-            
+
             if(isc.RelativeDateItem) {
                 isc.RelativeDateItem.changeDefaults("pickerIconDefaults", { src:"[SKIN]/DynamicForm/date_control.png" });
             }
@@ -1588,13 +1679,6 @@ isc.loadSkin = function (theWindow) {
             // -------------------------------------------
             // 21) Printing
             // -------------------------------------------
-            if (isc.PrintWindow) {
-                isc.PrintWindow.changeDefaults("printButtonDefaults", { height:18 });
-            }
-
-            // -------------------------------------------
-            // 21) Printing
-            // -------------------------------------------
             if (isc.Calendar) {
                 isc.Calendar.changeDefaults("datePickerButtonDefaults", {
                     showDown:false,
@@ -1606,10 +1690,18 @@ isc.loadSkin = function (theWindow) {
                     height:10,
                     layoutBottomMargin:10
                 });
-                
+
                 isc.Calendar.changeDefaults("addEventButtonDefaults", {
                     src:"[SKINIMG]actions/plus.png"
                 });
+
+                isc.EventWindow.changeDefaults("resizerDefaults", {
+                    src:"[SKIN]/Window/v_resizer.png"
+                });
+
+                isc.TimelineWindow.changeDefaults("resizerDefaults", {
+                    src:"[SKIN]/Window/h_resizer.png"
+                })
             }
 
             // -------------------------------------------
@@ -1633,7 +1725,7 @@ isc.loadSkin = function (theWindow) {
                     showEdges:true
                 });
             }
-            
+
             // -------------------------------------------
             // ExampleViewPane - used in the feature explorer
             // -------------------------------------------
@@ -1641,13 +1733,259 @@ isc.loadSkin = function (theWindow) {
                 isc.ExampleViewPane.addProperties({
                     styleName:"normal"
                 });
-            }    
+            }
 
             // specify where the browser should redirect if not supported
             isc.Page.checkBrowserAndRedirect("[SKIN]/unsupported_browser.html");
 
         } //end useCSS3 else block
 
+
+
+        // Skinning not dependent on whether CSS3 is being used.
+
+        //----------------------------------------
+        // 1) Scrollbars
+        //----------------------------------------
+        if (isc.Scrollbar && useSpriting) {
+            isc.Scrollbar.changeDefaults("startImg", {
+                name: "blank1",
+                baseStyleKey: "vertical",
+                baseStyleMap: {
+                    "true": "vScrollStart",
+                    "false": "hScrollStart"
+                },
+                baseStyle:"scrollStart"
+            });
+            isc.Scrollbar.changeDefaults("endImg", {
+                name: "blank10",
+                baseStyleKey: "vertical",
+                baseStyleMap: {
+                    "true": "vScrollEnd",
+                    "false": "hScrollEnd"
+                },
+                baseStyle:"scrollEnd"
+            });
+
+            isc.ScrollThumb.addProperties({
+                showGrip: true,
+                showRollOverGrip: false,
+                showDownGrip: false,
+                showRollOver: true,
+                showDown: true,
+                src: "[SKINIMG]/blank.gif",
+                gripImgSuffix: ""
+            });
+            isc.VScrollThumb.addProperties({
+                iconStyle: "vScrollThumbGrip",
+                items: [{
+                    name: "blank1",
+                    width: "capSize",
+                    height: "capSize",
+                    baseStyle: "vScrollThumbStart"
+                }, {
+                    name: "blank2",
+                    width: "*",
+                    height: "*",
+                    baseStyle: "vScrollThumbStretch"
+                }, {
+                    name: "blank3",
+                    width: "capSize",
+                    height: "capSize",
+                    baseStyle: "vScrollThumbEnd"
+                }]
+            });
+            isc.HScrollThumb.addProperties({
+                iconStyle: "hScrollThumbGrip",
+                items: [{
+                    name: "blank1",
+                    width: "capSize",
+                    height: "capSize",
+                    baseStyle: "hScrollThumbStart"
+                }, {
+                    name: "blank2",
+                    width: "*",
+                    height: "*",
+                    baseStyle: "hScrollThumbStretch"
+                }, {
+                    name: "blank3",
+                    width: "capSize",
+                    height: "capSize",
+                    baseStyle: "hScrollThumbEnd"
+                }]
+            });
+        }
+
+        //----------------------------------------
+        // 6) TabSets
+        //----------------------------------------
+        if (isc.TabSet && useSpriting) {
+            isc.TabSet.addMethods({
+                getScrollerBackImgName : function skin_TabSet_getScrollerBackImgName() {
+                    return "blank1";
+                },
+                getScrollerForwardImgName : function skin_TabSet_getScrollerForwardImgName() {
+                    return "blank2";
+                },
+                getTabPickerSrc : function skin_TabSet_getTabPickerSrc() {
+                    return "[SKINIMG]/blank.gif";
+                }
+            });
+            isc.TabSet.changeDefaults("scrollerBackImg", {
+                baseStyleKey: "scrollerPosition",
+                baseStyleMap: {
+                    "top": "tabScrollerTopBack",
+                    "right": "tabScrollerRightBack",
+                    "bottom": "tabScrollerBottomBack",
+                    "left": "tabScrollerLeftBack"
+                },
+                baseStyle: "tabScrollerBack"
+            });
+            isc.TabSet.changeDefaults("scrollerForwardImg", {
+                baseStyleKey: "scrollerPosition",
+                baseStyleMap: {
+                    "top": "tabScrollerTopForward",
+                    "right": "tabScrollerRightForward",
+                    "bottom": "tabScrollerBottomForward",
+                    "left": "tabScrollerLeftForward"
+                },
+                baseStyle: "tabScrollerForward"
+            });
+            isc.TabSet.changeDefaults("tabPickerDefaults", {
+                statelessImage: true,
+                imageStyle: "tabPicker",
+                redrawOnStateChange: true
+            });
+        }
+
+        //----------------------------------------
+        // 12) ListGrids
+        //----------------------------------------
+        if (isc.ListGrid) {
+            isc.ListGrid.addProperties({
+                expansionFieldImageShowRTL: true
+            });
+
+            if (useSpriting) {
+                isc.ListGrid.addProperties({
+                    booleanBaseStyle: "checkbox",
+                    booleanTrueImage: "blank",
+                    booleanFalseImage: "blank",
+                    booleanPartialImage: "blank",
+                    booleanImageWidth: 13,
+                    booleanImageHeight: 13
+                });
+            }
+        }
+
+        //----------------------------------------
+        // 14) Form controls
+        //----------------------------------------
+        if (isc.FormItem) {
+            isc.FormItem.addProperties({
+                showRTL: true
+            });
+        }
+        if (isc.ComboBoxItem) {
+            isc.ComboBoxItem.addProperties({
+                pickListTallBaseStyle: "tallPickListCell",
+                showFocusedPickerIcon: false
+            });
+            isc.ComboBoxItem.changeDefaults("pickerIconDefaults", {
+                showOver: true,
+                showRTL: true
+            });
+            if (useSpriting) {
+                isc.ComboBoxItem.addProperties({
+                    pickerIconSrc: "blank",
+                    pickerIconStyle: "comboBoxItemPickerCell"
+                });
+                isc.ComboBoxItem.changeDefaults("pickerIconDefaults", {
+                    baseStyle: "comboBoxItemPicker"
+                });
+            }
+        }
+        if (isc.MultiComboBoxItem) {
+            isc.MultiComboBoxItem.changeDefaults("buttonDefaults", {
+                icon: "[SKIN]DynamicForm/drop.png",
+                iconWidth: 12,
+                iconHeight: 12,
+                iconSize: 12
+            });
+        }
+
+        if (isc.PickListMenu) {
+            isc.PickListMenu.addProperties({
+                showOverAsSelected: false
+            });
+        }
+
+        if (isc.SelectItem) {
+            isc.SelectItem.addProperties({
+                pickListTallBaseStyle: "tallPickListCell",
+                showFocusedPickerIcon: false
+            });
+            isc.SelectItem.changeDefaults("pickerIconDefaults", {
+                showOver: true,
+                showRTL: true
+            });
+            if (useSpriting) {
+                isc.SelectItem.addProperties({
+                    pickerIconSrc: "blank",
+                    pickerIconStyle: "comboBoxItemPickerCell"
+                });
+                isc.SelectItem.changeDefaults("pickerIconDefaults", {
+                    baseStyle: "comboBoxItemPicker"
+                });
+            }
+        }
+        if (isc.SpinnerItem) {
+            isc.SpinnerItem.INCREASE_ICON = isc.addProperties(isc.SpinnerItem.INCREASE_ICON, {
+                width:16,
+                height:11,
+                showOver:false,
+                showFocused:true,
+                showFocusedWithItem:false,
+                showRTL:true
+            });
+            isc.SpinnerItem.DECREASE_ICON = isc.addProperties(isc.SpinnerItem.DECREASE_ICON, {
+                width:16,
+                height:11,
+                showOver:false,
+                showFocused:true,
+                showFocusedWithItem:false,
+                showRTL:true
+            });
+            if (useSpriting) {
+                isc.SpinnerItem.INCREASE_ICON = isc.addProperties(isc.SpinnerItem.INCREASE_ICON, {
+                    src:"blank",
+                    baseStyle:"spinnerItemIncrease"
+                });
+                isc.SpinnerItem.DECREASE_ICON = isc.addProperties(isc.SpinnerItem.DECREASE_ICON, {
+                    src:"blank",
+                    baseStyle:"spinnerItemDecrease"
+                });
+            }
+        }
+
+        if (isc.RichTextEditor) {
+            isc.RichTextEditor.addProperties({
+                showEdges:false,
+                styleName:"richTextEditorBorder"
+            });
+        }
+
+        // -------------------------------------------
+        // 21) Printing
+        // -------------------------------------------
+        if (isc.PrintWindow) {
+            isc.PrintWindow.changeDefaults("printButtonDefaults", { 
+                height:19 
+            });
+        }
+
+        // remember the current skin so we can detect multiple skins being loaded
+        if (isc.setCurrentSkin) isc.setCurrentSkin("EnterpriseBlue");
     }   // end with()
 }   // end loadSkin()
 

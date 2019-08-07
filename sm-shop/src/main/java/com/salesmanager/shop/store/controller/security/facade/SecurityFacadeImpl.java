@@ -5,9 +5,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.inject.Inject;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.user.GroupService;
 import com.salesmanager.core.business.services.user.PermissionService;
@@ -19,66 +21,64 @@ import com.salesmanager.shop.store.api.exception.ServiceRuntimeException;
 
 @Service("securityFacade")
 public class SecurityFacadeImpl implements SecurityFacade {
-  
-  //private static final String USER_PASSWORD_PATTERN = "((?=.*[a-z])(?=.*\\d)(?=.*[A-Z])(?=.*[@#$%!]).{6,12})";
-  private static final String USER_PASSWORD_PATTERN = "((?=.*[a-z])(?=.*\\d)(?=.*[A-Z]).{6,12})";
-  
-  private Pattern userPasswordPattern = Pattern.compile(USER_PASSWORD_PATTERN);
 
-  @Inject
-  private PermissionService permissionService;
+	// private static final String USER_PASSWORD_PATTERN =
+	// "((?=.*[a-z])(?=.*\\d)(?=.*[A-Z])(?=.*[@#$%!]).{6,12})";
+	private static final String USER_PASSWORD_PATTERN = "((?=.*[a-z])(?=.*\\d)(?=.*[A-Z]).{6,12})";
 
-  @Inject
-  private GroupService groupService;
-  
-  @Inject
-  private PasswordEncoder passwordEncoder;
+	private Pattern userPasswordPattern = Pattern.compile(USER_PASSWORD_PATTERN);
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  @Override
-  public List<ReadablePermission> getPermissions(List<String> groups) {
+	@Autowired
+	private PermissionService permissionService;
 
-    List<Group> userGroups = null;
-    try {
-      userGroups = groupService.listGroupByNames(groups);
+	@Autowired
+	private GroupService groupService;
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-      // TODO if groups == null
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public List<ReadablePermission> getPermissions(List<String> groups) {
 
-      List<Integer> ids = new ArrayList<Integer>();
-      for (Group g : userGroups) {
-        ids.add(g.getId());
-      }
+		List<Group> userGroups = null;
+		try {
+			userGroups = groupService.listGroupByNames(groups);
 
-      PermissionCriteria criteria = new PermissionCriteria();
-      criteria.setGroupIds(new HashSet(ids));
+			// TODO if groups == null
 
-      PermissionList permissions = permissionService.listByCriteria(criteria);
-      throw new ServiceRuntimeException("Not implemented");
-    } catch (ServiceException e) {
-      e.printStackTrace();
-    }
+			List<Integer> ids = new ArrayList<Integer>();
+			for (Group g : userGroups) {
+				ids.add(g.getId());
+			}
 
-    return null;
-  }
+			PermissionCriteria criteria = new PermissionCriteria();
+			criteria.setGroupIds(new HashSet(ids));
 
-  @Override
-  public boolean validateUserPassword(String password) {
+			PermissionList permissions = permissionService.listByCriteria(criteria);
+			throw new ServiceRuntimeException("Not implemented");
+		} catch (ServiceException e) {
+			e.printStackTrace();
+		}
 
-    Matcher matcher = userPasswordPattern.matcher(password);
-    return matcher.matches();
-  }
+		return null;
+	}
 
-  @Override
-  public String encodePassword(String password) {
-    return passwordEncoder.encode(password);
-  }
+	@Override
+	public boolean validateUserPassword(String password) {
 
-  @Override
-  public boolean matchPassword(String modelPassword, String newPassword) {
-    return passwordEncoder.matches(newPassword, modelPassword);
-  }
-  
-  
+		Matcher matcher = userPasswordPattern.matcher(password);
+		return matcher.matches();
+	}
+
+	@Override
+	public String encodePassword(String password) {
+		return passwordEncoder.encode(password);
+	}
+
+	@Override
+	public boolean matchPassword(String modelPassword, String newPassword) {
+		return passwordEncoder.matches(newPassword, modelPassword);
+	}
 
 }

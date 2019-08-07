@@ -7,6 +7,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -28,13 +29,13 @@ public class ProductImageServiceImpl extends SalesManagerEntityServiceImpl<Long,
 	
 	private ProductImageRepository productImageRepository;
 
-	@Inject
+	@Autowired
 	public ProductImageServiceImpl(ProductImageRepository productImageRepository) {
 		super(productImageRepository);
 		this.productImageRepository = productImageRepository;
 	}
 	
-	@Inject
+	@Autowired
 	private ProductFileManager productFileManager;
 	
 

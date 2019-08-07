@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.exception.ServiceException;
@@ -17,7 +18,7 @@ import com.salesmanager.core.model.catalog.product.price.ProductPriceDescription
 public class ProductPriceServiceImpl extends SalesManagerEntityServiceImpl<Long, ProductPrice> 
 	implements ProductPriceService {
 
-	@Inject
+	@Autowired
 	public ProductPriceServiceImpl(ProductPriceRepository productPriceRepository) {
 		super(productPriceRepository);
 	}

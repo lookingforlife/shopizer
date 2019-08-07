@@ -4,8 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.exception.ServiceException;
@@ -26,7 +25,7 @@ public class PermissionServiceImpl extends
 	private PermissionRepository permissionRepository;
 
 
-	@Inject
+	@Autowired
 	public PermissionServiceImpl(PermissionRepository permissionRepository) {
 		super(permissionRepository);
 		this.permissionRepository = permissionRepository;

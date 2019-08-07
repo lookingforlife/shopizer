@@ -1,19 +1,19 @@
 package com.salesmanager.shop.store.api.v1.product;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.inject.Inject;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.salesmanager.core.business.services.catalog.product.ProductService;
 import com.salesmanager.core.business.services.catalog.product.image.ProductImageService;
 import com.salesmanager.core.model.catalog.product.Product;
@@ -36,175 +37,167 @@ import com.salesmanager.shop.model.catalog.product.PersistableImage;
 import com.salesmanager.shop.populator.catalog.PersistableProductImagePopulator;
 import com.salesmanager.shop.store.controller.store.facade.StoreFacade;
 import com.salesmanager.shop.utils.LanguageUtils;
+
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
 @RequestMapping("/api/v1")
 public class ProductImageApi {
 
-  @Inject private ProductImageService productImageService;
+	@Autowired
+	private ProductImageService productImageService;
 
-  @Inject private StoreFacade storeFacade;
+	@Autowired
+	private StoreFacade storeFacade;
 
-  @Inject private LanguageUtils languageUtils;
+	@Autowired
+	private LanguageUtils languageUtils;
 
-  @Inject private ProductService productService;
+	@Autowired
+	private ProductService productService;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProductImageApi.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProductImageApi.class);
 
-  /**
-   * To be used with MultipartFile
-   *
-   * @param id
-   * @param uploadfiles
-   * @param request
-   * @param response
-   * @throws Exception
-   */
-  @ResponseStatus(HttpStatus.CREATED)
-  @RequestMapping(
-      value = {"/private/products/{id}/images", "/auth/products/{id}/images"},
-      method = RequestMethod.POST)
-  public void uploadImages(
-      @PathVariable Long id,
-      @RequestParam("files") MultipartFile[] uploadfiles,
-      HttpServletRequest request,
-      HttpServletResponse response)
-      throws Exception {
+	/**
+	 * To be used with MultipartFile
+	 *
+	 * @param id
+	 * @param uploadfiles
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	@ResponseStatus(HttpStatus.CREATED)
+	@RequestMapping(value = { "/private/products/{id}/images",
+			"/auth/products/{id}/images" }, method = RequestMethod.POST)
+	public void uploadImages(@PathVariable Long id, @RequestParam("files") MultipartFile[] uploadfiles,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-    try {
+		try {
 
-      // get the product
-      Product product = productService.getById(id);
+			// get the product
+			Product product = productService.getById(id);
 
-      if (product == null) {
-        response.sendError(404, "No Product found for ID : " + id);
-        return;
-      }
+			if (product == null) {
+				response.sendError(404, "No Product found for ID : " + id);
+				return;
+			}
 
-      boolean hasDefaultImage = false;
-      Set<ProductImage> images = product.getImages();
-      if (!CollectionUtils.isEmpty(images)) {
-        for (ProductImage image : images) {
-          if (image.isDefaultImage()) {
-            hasDefaultImage = true;
-            break;
-          }
-        }
-      }
+			boolean hasDefaultImage = false;
+			Set<ProductImage> images = product.getImages();
+			if (!CollectionUtils.isEmpty(images)) {
+				for (ProductImage image : images) {
+					if (image.isDefaultImage()) {
+						hasDefaultImage = true;
+						break;
+					}
+				}
+			}
 
-      List<ProductImage> contentImagesList = new ArrayList<ProductImage>();
+			List<ProductImage> contentImagesList = new ArrayList<ProductImage>();
 
-      for (MultipartFile multipartFile : uploadfiles) {
-        if (!multipartFile.isEmpty()) {
-          ProductImage productImage = new ProductImage();
-          productImage.setImage(multipartFile.getInputStream());
-          productImage.setProductImage(multipartFile.getOriginalFilename());
-          productImage.setProduct(product);
+			for (MultipartFile multipartFile : uploadfiles) {
+				if (!multipartFile.isEmpty()) {
+					ProductImage productImage = new ProductImage();
+					productImage.setImage(multipartFile.getInputStream());
+					productImage.setProductImage(multipartFile.getOriginalFilename());
+					productImage.setProduct(product);
 
-          if (!hasDefaultImage) {
-            productImage.setDefaultImage(true);
-            hasDefaultImage = true;
-          }
+					if (!hasDefaultImage) {
+						productImage.setDefaultImage(true);
+						hasDefaultImage = true;
+					}
 
-          contentImagesList.add(productImage);
-        }
-      }
+					contentImagesList.add(productImage);
+				}
+			}
 
-      if (CollectionUtils.isNotEmpty(contentImagesList)) {
-        productImageService.addProductImages(product, contentImagesList);
-      }
+			if (CollectionUtils.isNotEmpty(contentImagesList)) {
+				productImageService.addProductImages(product, contentImagesList);
+			}
 
-    } catch (Exception e) {
-      LOGGER.error("Error while creating ProductImage", e);
-      try {
-        response.sendError(503, "Error while creating ProductImage " + e.getMessage());
-      } catch (Exception ignore) {
-      }
-    }
-  }
+		} catch (Exception e) {
+			LOGGER.error("Error while creating ProductImage", e);
+			try {
+				response.sendError(503, "Error while creating ProductImage " + e.getMessage());
+			} catch (Exception ignore) {
+			}
+		}
+	}
 
-  /**
-   * Simple way of uploading image using Base64
-   *
-   * @param id
-   * @param image
-   * @param request
-   * @param response
-   * @return
-   * @throws Exception
-   */
-  @ResponseStatus(HttpStatus.CREATED)
-  @RequestMapping(
-      value = {"/private/products/{id}/images"},
-      method = RequestMethod.POST)
-  @ApiImplicitParams({
-      @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
-      @ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en")
-  })
-  public @ResponseBody PersistableImage createImage(
-      @PathVariable Long id,
-      @Valid @RequestBody PersistableImage image,
-			@ApiIgnore MerchantStore merchantStore,
-			@ApiIgnore Language language,
-      HttpServletRequest request,
-      HttpServletResponse response) {
+	/**
+	 * Simple way of uploading image using Base64
+	 *
+	 * @param id
+	 * @param image
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	@ResponseStatus(HttpStatus.CREATED)
+	@RequestMapping(value = { "/private/products/{id}/images" }, method = RequestMethod.POST)
+	@ApiImplicitParams({ @ApiImplicitParam(name = "store", dataType = "String", defaultValue = "DEFAULT"),
+			@ApiImplicitParam(name = "lang", dataType = "String", defaultValue = "en") })
+	public @ResponseBody PersistableImage createImage(@PathVariable Long id, @Valid @RequestBody PersistableImage image,
+			@ApiIgnore MerchantStore merchantStore, @ApiIgnore Language language, HttpServletRequest request,
+			HttpServletResponse response) {
 
-    try {
-      // get the product
-      Product product = productService.getById(id);
+		try {
+			// get the product
+			Product product = productService.getById(id);
 
-      PersistableProductImagePopulator imagePopulator = new PersistableProductImagePopulator();
-      imagePopulator.setProduct(product);
-      ProductImage productImage = imagePopulator.populate(image, merchantStore, language);
+			PersistableProductImagePopulator imagePopulator = new PersistableProductImagePopulator();
+			imagePopulator.setProduct(product);
+			ProductImage productImage = imagePopulator.populate(image, merchantStore, language);
 
-      InputStream input = new ByteArrayInputStream(image.getBytes());
+			InputStream input = new ByteArrayInputStream(image.getBytes());
 
-      ImageContentFile file = new ImageContentFile();
-      file.setFile(input);
-      file.setFileContentType(FileContentType.IMAGE);
-      file.setFileName(productImage.getProductImage());
-      file.setMimeType(image.getContentType());
+			ImageContentFile file = new ImageContentFile();
+			file.setFile(input);
+			file.setFileContentType(FileContentType.IMAGE);
+			file.setFileName(productImage.getProductImage());
+			file.setMimeType(image.getContentType());
 
-      productImageService.addProductImage(product, productImage, file);
-      image.setId(productImage.getId());
+			productImageService.addProductImage(product, productImage, file);
+			image.setId(productImage.getId());
 
-      return image;
+			return image;
 
-    } catch (Exception e) {
-      LOGGER.error("Error while creating ProductImage", e);
-      try {
-        response.sendError(503, "Error while creating ProductImage " + e.getMessage());
-      } catch (Exception ignore) {
-      }
+		} catch (Exception e) {
+			LOGGER.error("Error while creating ProductImage", e);
+			try {
+				response.sendError(503, "Error while creating ProductImage " + e.getMessage());
+			} catch (Exception ignore) {
+			}
 
-      return null;
-    }
-  }
+			return null;
+		}
+	}
 
-  @ResponseStatus(HttpStatus.OK)
-  @RequestMapping(
-      value = {"/private/products/images/{id}", "/auth/products/images/{id}"},
-      method = RequestMethod.DELETE)
-  public void deleteImage(
-      @PathVariable Long id, HttpServletRequest request, HttpServletResponse response)
-      throws Exception {
+	@ResponseStatus(HttpStatus.OK)
+	@RequestMapping(value = { "/private/products/images/{id}",
+			"/auth/products/images/{id}" }, method = RequestMethod.DELETE)
+	public void deleteImage(@PathVariable Long id, HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
 
-    try {
-      ProductImage productImage = productImageService.getById(id);
+		try {
+			ProductImage productImage = productImageService.getById(id);
 
-      if (productImage != null) {
-        productImageService.delete(productImage);
-      } else {
-        response.sendError(404, "No ProductImage found for ID : " + id);
-      }
+			if (productImage != null) {
+				productImageService.delete(productImage);
+			} else {
+				response.sendError(404, "No ProductImage found for ID : " + id);
+			}
 
-    } catch (Exception e) {
-      LOGGER.error("Error while deleting ProductImage", e);
-      try {
-        response.sendError(503, "Error while deleting ProductImage " + e.getMessage());
-      } catch (Exception ignore) {
-      }
-    }
-  }
+		} catch (Exception e) {
+			LOGGER.error("Error while deleting ProductImage", e);
+			try {
+				response.sendError(503, "Error while deleting ProductImage " + e.getMessage());
+			} catch (Exception ignore) {
+			}
+		}
+	}
 }

@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.exception.ServiceException;
@@ -29,14 +30,14 @@ public class CustomerServiceImpl extends SalesManagerEntityServiceImpl<Long, Cus
 	
 	private CustomerRepository customerRepository;
 	
-	@Inject
+	@Autowired
 	private CustomerAttributeService customerAttributeService;
 	
-	@Inject
+	@Autowired
 	private GeoLocation geoLocation;
 
 	
-	@Inject
+	@Autowired
 	public CustomerServiceImpl(CustomerRepository customerRepository) {
 		super(customerRepository);
 		this.customerRepository = customerRepository;

@@ -17,6 +17,7 @@ import com.salesmanager.shop.utils.LanguageUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.inject.Inject;
@@ -36,19 +37,19 @@ public class AdminFilter extends HandlerInterceptorAdapter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdminFilter.class);
 	
-	@Inject
+	@Autowired
 	private MerchantStoreService merchantService;
 	
-	@Inject
+	@Autowired
 	private UserService userService;
 	
-	@Inject
+	@Autowired
 	private LanguageService languageService;
 	
-	@Inject
+	@Autowired
 	private CacheUtils cache;
 	
-	@Inject
+	@Autowired
 	private LanguageUtils languageUtils;
 	
 	public boolean preHandle(
@@ -104,6 +105,7 @@ public class AdminFilter extends HandlerInterceptorAdapter {
 		if(store==null) {
 				store = merchantService.getByCode(storeCode);
 				request.getSession().setAttribute(Constants.ADMIN_STORE, store);
+				
 		}
 		request.setAttribute(Constants.ADMIN_STORE, store);
 		

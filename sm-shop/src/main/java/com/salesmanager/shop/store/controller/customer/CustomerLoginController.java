@@ -19,6 +19,7 @@ import com.salesmanager.shop.utils.ImageFilePath;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.AuthenticationException;
@@ -39,24 +40,24 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/shop/customer")
 public class CustomerLoginController extends AbstractController {
 	
-	@Inject
+	@Autowired
     private AuthenticationManager customerAuthenticationManager;
 	
 
-    @Inject
+    @Autowired
     private  CustomerFacade customerFacade;
 
-    @Inject
+    @Autowired
     private ShoppingCartService shoppingCartService;
     
-    @Inject
+    @Autowired
     private ShoppingCartCalculationService shoppingCartCalculationService;
     
-    @Inject
+    @Autowired
     private PricingService pricingService;
 
     
-	 @Inject
+	 @Autowired
 	 @Qualifier("img")
 	 private ImageFilePath imageUtils;
 	

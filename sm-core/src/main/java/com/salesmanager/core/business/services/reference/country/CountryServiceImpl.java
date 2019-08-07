@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -28,11 +29,11 @@ public class CountryServiceImpl extends SalesManagerEntityServiceImpl<Integer, C
 	
 	private CountryRepository countryRepository;
 	
-	@Inject
+	@Autowired
 	private CacheUtils cache;
 
 	
-	@Inject
+	@Autowired
 	public CountryServiceImpl(CountryRepository countryRepository) {
 		super(countryRepository);
 		this.countryRepository = countryRepository;

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.exception.ServiceException;
@@ -19,12 +20,12 @@ public class ProductOptionValueServiceImpl extends
 		SalesManagerEntityServiceImpl<Long, ProductOptionValue> implements
 		ProductOptionValueService {
 
-	@Inject
+	@Autowired
 	private ProductAttributeService productAttributeService;
 	
 	private ProductOptionValueRepository productOptionValueRepository;
 	
-	@Inject
+	@Autowired
 	public ProductOptionValueServiceImpl(
 			ProductOptionValueRepository productOptionValueRepository) {
 			super(productOptionValueRepository);

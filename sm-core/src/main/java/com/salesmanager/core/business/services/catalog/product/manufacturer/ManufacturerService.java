@@ -13,6 +13,9 @@ public interface ManufacturerService extends SalesManagerEntityService<Long, Man
 
 	List<Manufacturer> listByStore(MerchantStore store, Language language)
 			throws ServiceException;
+	
+	List<Manufacturer> listManufacturers()
+			throws ServiceException;
 
 	List<Manufacturer> listByStore(MerchantStore store) throws ServiceException;
 

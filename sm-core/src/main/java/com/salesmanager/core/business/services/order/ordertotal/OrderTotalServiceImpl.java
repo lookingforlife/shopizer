@@ -26,10 +26,10 @@ public class OrderTotalServiceImpl implements OrderTotalService {
 	@Resource(name="orderTotalsPostProcessors")
 	List<OrderTotalPostProcessorModule> orderTotalPostProcessors;
 	
-	@Inject
+	@Autowired
 	private ProductService productService;
 	
-	@Inject
+	@Autowired
 	private LanguageService languageService;
 
 	@Override

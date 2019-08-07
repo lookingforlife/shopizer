@@ -1,9 +1,8 @@
 package com.salesmanager.core.business.services.shipping;
 
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.repositories.shipping.ShippingOriginRepository;
@@ -22,7 +21,7 @@ public class ShippingOriginServiceImpl extends SalesManagerEntityServiceImpl<Lon
 
 	
 
-	@Inject
+	@Autowired
 	public ShippingOriginServiceImpl(ShippingOriginRepository shippingOriginRepository) {
 		super(shippingOriginRepository);
 		this.shippingOriginRepository = shippingOriginRepository;

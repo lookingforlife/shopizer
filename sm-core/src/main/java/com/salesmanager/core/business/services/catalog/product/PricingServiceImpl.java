@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.exception.ServiceException;
@@ -30,7 +31,7 @@ public class PricingServiceImpl implements PricingService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PricingServiceImpl.class);
 	
 
-	@Inject
+	@Autowired
 	private ProductPriceUtils priceUtil;
 	
 	@Override

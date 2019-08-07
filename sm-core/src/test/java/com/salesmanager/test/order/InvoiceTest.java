@@ -13,8 +13,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jopendocument.dom.OOUtils;
 import org.jopendocument.dom.spreadsheet.Sheet;
@@ -23,7 +21,7 @@ import org.jopendocument.model.OpenDocument;
 import org.jopendocument.renderer.ODTRenderer;
 import org.junit.Assert;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
@@ -74,7 +72,7 @@ import com.salesmanager.core.model.reference.zone.Zone;
 @Ignore
 public class InvoiceTest extends com.salesmanager.test.common.AbstractSalesManagerCoreTestCase {
 	
-	@Inject
+	@Autowired
 	ProductPriceUtils priceUtil;
 
 	//@Test

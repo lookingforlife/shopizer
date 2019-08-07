@@ -2,12 +2,12 @@ package com.salesmanager.shop.controller;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,65 +22,68 @@ import com.salesmanager.core.model.content.OutputContentFile;
 
 /**
  * When handling images and files from the application server
+ * 
  * @author c.samson
  *
  */
 @Controller
 public class ImagesController {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(ImagesController.class);
-	
 
-	
-	@Inject
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImagesController.class);
+
+	@Autowired
 	private ContentService contentService;
-	
-	@Inject
+
+	@Autowired
 	private ProductImageService productImageService;
-	
+
 	/**
 	 * Logo, content image
+	 * 
 	 * @param storeId
-	 * @param imageType (LOGO, CONTENT, IMAGE)
+	 * @param imageType
+	 *            (LOGO, CONTENT, IMAGE)
 	 * @param imageName
 	 * @return
 	 * @throws IOException
-	 * @throws ServiceException 
+	 * @throws ServiceException
 	 */
 	@RequestMapping("/static/files/{storeCode}/{imageType}/{imageName}.{extension}")
-	public @ResponseBody byte[] printImage(@PathVariable final String storeCode, @PathVariable final String imageType, @PathVariable final String imageName, @PathVariable final String extension) throws IOException, ServiceException {
+	public @ResponseBody byte[] printImage(@PathVariable final String storeCode, @PathVariable final String imageType,
+			@PathVariable final String imageName, @PathVariable final String extension)
+			throws IOException, ServiceException {
 
 		// example -> /static/files/DEFAULT/CONTENT/myImage.png
-		
+
 		FileContentType imgType = null;
-		
-		if(FileContentType.LOGO.name().equals(imageType)) {
+
+		if (FileContentType.LOGO.name().equals(imageType)) {
 			imgType = FileContentType.LOGO;
 		}
-		
-		if(FileContentType.IMAGE.name().equals(imageType)) {
+
+		if (FileContentType.IMAGE.name().equals(imageType)) {
 			imgType = FileContentType.IMAGE;
 		}
-		
-		if(FileContentType.PROPERTY.name().equals(imageType)) {
+
+		if (FileContentType.PROPERTY.name().equals(imageType)) {
 			imgType = FileContentType.PROPERTY;
 		}
-		
-		OutputContentFile image =contentService.getContentFile(storeCode, imgType, new StringBuilder().append(imageName).append(".").append(extension).toString());
-		
-		
-		if(image!=null) {
+
+		OutputContentFile image = contentService.getContentFile(storeCode, imgType,
+				new StringBuilder().append(imageName).append(".").append(extension).toString());
+
+		if (image != null) {
 			return image.getFile().toByteArray();
 		} else {
-			//empty image placeholder
+			// empty image placeholder
 			return null;
 		}
 
 	}
-	
 
 	/**
 	 * For product images
+	 * 
 	 * @Deprecated
 	 * @param storeCode
 	 * @param productCode
@@ -91,45 +94,45 @@ public class ImagesController {
 	 * @throws IOException
 	 */
 	@RequestMapping("/static/{storeCode}/{imageType}/{productCode}/{imageName}.{extension}")
-	public @ResponseBody byte[] printImage(@PathVariable final String storeCode, @PathVariable final String productCode, @PathVariable final String imageType, @PathVariable final String imageName, @PathVariable final String extension) throws IOException {
+	public @ResponseBody byte[] printImage(@PathVariable final String storeCode, @PathVariable final String productCode,
+			@PathVariable final String imageType, @PathVariable final String imageName,
+			@PathVariable final String extension) throws IOException {
 
 		// product image
 		// example small product image -> /static/DEFAULT/products/TB12345/product1.jpg
-		
+
 		// example large product image -> /static/DEFAULT/products/TB12345/product1.jpg
 
-		
 		/**
 		 * List of possible imageType
 		 * 
 		 */
-		
 
 		ProductImageSize size = ProductImageSize.SMALL;
-		
-		if(imageType.equals(FileContentType.PRODUCTLG.name())) {
-			size = ProductImageSize.LARGE;
-		} 
-		
 
-		
+		if (imageType.equals(FileContentType.PRODUCTLG.name())) {
+			size = ProductImageSize.LARGE;
+		}
+
 		OutputContentFile image = null;
 		try {
-			image = productImageService.getProductImage(storeCode, productCode, new StringBuilder().append(imageName).append(".").append(extension).toString(), size);
+			image = productImageService.getProductImage(storeCode, productCode,
+					new StringBuilder().append(imageName).append(".").append(extension).toString(), size);
 		} catch (ServiceException e) {
 			LOGGER.error("Cannot retrieve image " + imageName, e);
 		}
-		if(image!=null) {
+		if (image != null) {
 			return image.getFile().toByteArray();
 		} else {
-			//empty image placeholder
+			// empty image placeholder
 			return null;
 		}
 
 	}
-	
+
 	/**
 	 * Exclusive method for dealing with product images
+	 * 
 	 * @param storeCode
 	 * @param productCode
 	 * @param imageName
@@ -139,46 +142,47 @@ public class ImagesController {
 	 * @throws IOException
 	 */
 	@RequestMapping("/static/products/{storeCode}/{productCode}/{imageSize}/{imageName}.{extension}")
-	public @ResponseBody byte[] printImage(@PathVariable final String storeCode, @PathVariable final String productCode, @PathVariable final String imageSize, @PathVariable final String imageName, @PathVariable final String extension, HttpServletRequest request) throws IOException {
+	public @ResponseBody byte[] printImage(@PathVariable final String storeCode, @PathVariable final String productCode,
+			@PathVariable final String imageSize, @PathVariable final String imageName,
+			@PathVariable final String extension, HttpServletRequest request) throws IOException {
 
 		// product image small
-		// example small product image -> /static/products/DEFAULT/TB12345/SMALL/product1.jpg
-		
-		// example large product image -> /static/products/DEFAULT/TB12345/LARGE/product1.jpg
+		// example small product image ->
+		// /static/products/DEFAULT/TB12345/SMALL/product1.jpg
 
+		// example large product image ->
+		// /static/products/DEFAULT/TB12345/LARGE/product1.jpg
 
 		/**
 		 * List of possible imageType
 		 * 
 		 */
-		
-		
-		ProductImageSize size = ProductImageSize.SMALL;
-		
-		if(FileContentType.PRODUCTLG.name().equals(imageSize)) {
-			size = ProductImageSize.LARGE;
-		} 
-		
-	
 
-		
+		ProductImageSize size = ProductImageSize.SMALL;
+
+		if (FileContentType.PRODUCTLG.name().equals(imageSize)) {
+			size = ProductImageSize.LARGE;
+		}
+
 		OutputContentFile image = null;
 		try {
-			image = productImageService.getProductImage(storeCode, productCode, new StringBuilder().append(imageName).append(".").append(extension).toString(), size);
+			image = productImageService.getProductImage(storeCode, productCode,
+					new StringBuilder().append(imageName).append(".").append(extension).toString(), size);
 		} catch (ServiceException e) {
 			LOGGER.error("Cannot retrieve image " + imageName, e);
 		}
-		if(image!=null) {
+		if (image != null) {
 			return image.getFile().toByteArray();
 		} else {
-			//empty image placeholder
+			// empty image placeholder
 			return null;
 		}
 
 	}
-	
+
 	/**
 	 * Exclusive method for dealing with product images
+	 * 
 	 * @param storeCode
 	 * @param productCode
 	 * @param imageName
@@ -188,44 +192,44 @@ public class ImagesController {
 	 * @throws IOException
 	 */
 	@RequestMapping("/static/products/{storeCode}/{productCode}/{imageName}.{extension}")
-	public @ResponseBody byte[] printImage(@PathVariable final String storeCode, @PathVariable final String productCode, @PathVariable final String imageName, @PathVariable final String extension, HttpServletRequest request) throws IOException {
+	public @ResponseBody byte[] printImage(@PathVariable final String storeCode, @PathVariable final String productCode,
+			@PathVariable final String imageName, @PathVariable final String extension, HttpServletRequest request)
+			throws IOException {
 
 		// product image
-		// example small product image -> /static/products/DEFAULT/TB12345/product1.jpg?size=small
-		
+		// example small product image ->
+		// /static/products/DEFAULT/TB12345/product1.jpg?size=small
+
 		// example large product image -> /static/products/DEFAULT/TB12345/product1.jpg
 		// or
-		//example large product image -> /static/products/DEFAULT/TB12345/product1.jpg?size=large
-		
+		// example large product image ->
+		// /static/products/DEFAULT/TB12345/product1.jpg?size=large
 
 		/**
 		 * List of possible imageType
 		 * 
 		 */
-		
 
 		ProductImageSize size = ProductImageSize.LARGE;
-		
-				
-		if(StringUtils.isNotBlank(request.getParameter("size"))) {
-			String requestSize = request.getParameter("size");
-			if(requestSize.equals(ProductImageSize.SMALL.name())) {
-				size = ProductImageSize.SMALL;
-			} 
-		}
-		
 
-		
+		if (StringUtils.isNotBlank(request.getParameter("size"))) {
+			String requestSize = request.getParameter("size");
+			if (requestSize.equals(ProductImageSize.SMALL.name())) {
+				size = ProductImageSize.SMALL;
+			}
+		}
+
 		OutputContentFile image = null;
 		try {
-			image = productImageService.getProductImage(storeCode, productCode, new StringBuilder().append(imageName).append(".").append(extension).toString(), size);
+			image = productImageService.getProductImage(storeCode, productCode,
+					new StringBuilder().append(imageName).append(".").append(extension).toString(), size);
 		} catch (ServiceException e) {
 			LOGGER.error("Cannot retrieve image " + imageName, e);
 		}
-		if(image!=null) {
+		if (image != null) {
 			return image.getFile().toByteArray();
 		} else {
-			//empty image placeholder
+			// empty image placeholder
 			return null;
 		}
 

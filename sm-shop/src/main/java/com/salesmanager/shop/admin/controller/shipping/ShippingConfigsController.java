@@ -43,10 +43,10 @@ public class ShippingConfigsController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ShippingConfigsController.class);
 
 	
-	@Inject
+	@Autowired
 	private ShippingService shippingService;
 	
-	@Inject
+	@Autowired
 	private CountryService countryService;
 	
 	/**

@@ -1,5 +1,38 @@
 package com.salesmanager.shop.admin.controller.user;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.modules.email.Email;
 import com.salesmanager.core.business.services.merchant.MerchantStoreService;
@@ -21,66 +54,45 @@ import com.salesmanager.shop.admin.model.web.Menu;
 import com.salesmanager.shop.admin.security.SecurityQuestion;
 import com.salesmanager.shop.constants.Constants;
 import com.salesmanager.shop.constants.EmailConstants;
-import com.salesmanager.shop.utils.*;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-import java.util.*;
+import com.salesmanager.shop.utils.EmailUtils;
+import com.salesmanager.shop.utils.FilePathUtils;
+import com.salesmanager.shop.utils.LabelUtils;
+import com.salesmanager.shop.utils.LocaleUtils;
+import com.salesmanager.shop.utils.UserUtils;
 
 @Controller
 public class UserController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 	
-	@Inject
+	@Autowired
 	private LanguageService languageService;
 	
-	@Inject
+	@Autowired
 	private UserService userService;
 
-	@Inject
+	@Autowired
 	private GroupService groupService;
 	
-	@Inject
+	@Autowired
 	private CountryService countryService;
 	
-	@Inject
+	@Autowired
 	private EmailService emailService;
 	
-	@Inject
+	@Autowired
 	private MerchantStoreService merchantStoreService;
 	
-	@Inject
+	@Autowired
 	LabelUtils messages;
 	
-	@Inject
+	@Autowired
 	private FilePathUtils filePathUtils;
 	
-	@Inject
+	@Autowired
 	private EmailUtils emailUtils;
 	
-	@Inject
+	@Autowired
 	@Named("passwordEncoder")
 	private PasswordEncoder passwordEncoder;
 	

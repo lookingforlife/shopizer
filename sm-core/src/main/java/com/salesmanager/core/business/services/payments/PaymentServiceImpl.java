@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.salesmanager.core.business.constants.Constants;
@@ -54,26 +55,26 @@ public class PaymentServiceImpl implements PaymentService {
 
 	private final static String PAYMENT_MODULES = "PAYMENT";
 	
-	@Inject
+	@Autowired
 	private MerchantConfigurationService merchantConfigurationService;
 	
-	@Inject
+	@Autowired
 	private ModuleConfigurationService moduleConfigurationService;
 	
-	@Inject
+	@Autowired
 	private TransactionService transactionService;
 	
-	@Inject
+	@Autowired
 	private OrderService orderService;
 	
-	@Inject
+	@Autowired
 	private CoreConfiguration coreConfiguration;
 	
-	@Inject
+	@Autowired
 	@Resource(name="paymentModules")
 	private Map<String,PaymentModule> paymentModules;
 	
-	@Inject
+	@Autowired
 	private Encryption encryption;
 	
 	@Override

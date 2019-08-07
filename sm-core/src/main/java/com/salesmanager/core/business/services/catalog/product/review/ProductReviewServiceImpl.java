@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import javax.inject.Inject;
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.repositories.catalog.product.review.ProductReviewRepository;
@@ -22,10 +23,10 @@ public class ProductReviewServiceImpl extends
 
 	private ProductReviewRepository productReviewRepository;
 	
-	@Inject
+	@Autowired
 	private ProductService productService;
 	
-	@Inject
+	@Autowired
 	public ProductReviewServiceImpl(
 			ProductReviewRepository productReviewRepository) {
 			super(productReviewRepository);

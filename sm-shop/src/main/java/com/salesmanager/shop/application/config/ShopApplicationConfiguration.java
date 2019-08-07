@@ -4,18 +4,15 @@ import static org.springframework.http.MediaType.IMAGE_GIF;
 import static org.springframework.http.MediaType.IMAGE_JPEG;
 import static org.springframework.http.MediaType.IMAGE_PNG;
 
-import com.salesmanager.core.business.configuration.CoreApplicationConfiguration;
-import com.salesmanager.shop.filter.AdminFilter;
-import com.salesmanager.shop.filter.CorsFilter;
-import com.salesmanager.shop.filter.StoreFilter;
-import com.salesmanager.shop.utils.LabelUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import javax.inject.Inject;
+
 import javax.sql.DataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
@@ -44,155 +41,157 @@ import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesView;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
 
+import com.salesmanager.core.business.configuration.CoreApplicationConfiguration;
+import com.salesmanager.shop.filter.AdminFilter;
+import com.salesmanager.shop.filter.CorsFilter;
+import com.salesmanager.shop.filter.StoreFilter;
+import com.salesmanager.shop.utils.LabelUtils;
+
 @Configuration
-@ComponentScan({"com.salesmanager.shop", "com.salesmanager.core.business"})
+@ComponentScan({ "com.salesmanager.shop", "com.salesmanager.core.business" })
 @ServletComponentScan
-@Import({CoreApplicationConfiguration.class}) // import sm-core configurations
-@ImportResource({"classpath:/spring/shopizer-shop-context.xml"})
+@Import({ CoreApplicationConfiguration.class }) // import sm-core configurations
+@ImportResource({ "classpath:/spring/shopizer-shop-context.xml" })
 @EnableWebSecurity
 public class ShopApplicationConfiguration extends WebMvcConfigurerAdapter {
 
-  protected final Log logger = LogFactory.getLog(getClass());
+	protected final Log logger = LogFactory.getLog(getClass());
 
-  @Inject private DataSource dataSource;
+	@Autowired
+	private DataSource dataSource;
 
-  @Inject private TextEncryptor textEncryptor;
-  @Inject private MerchantStoreArgumentResolver merchantStoreArgumentResolver;
-  @Inject private LanguageArgumentResolver languageArgumentResolver;
+	@Autowired
+	private TextEncryptor textEncryptor;
+	@Autowired
+	private MerchantStoreArgumentResolver merchantStoreArgumentResolver;
+	@Autowired
+	private LanguageArgumentResolver languageArgumentResolver;
 
-  @EventListener(ApplicationReadyEvent.class)
-  public void applicationReadyCode() {
-    String workingDir = System.getProperty("user.dir");
-    System.out.println("Current working directory : " + workingDir);
-  }
+	@EventListener(ApplicationReadyEvent.class)
+	public void applicationReadyCode() {
+		String workingDir = System.getProperty("user.dir");
+		System.out.println("Current working directory : " + workingDir);
+	}
 
-  /** Configure TilesConfigurer. */
-  @Bean
-  public TilesConfigurer tilesConfigurer() {
-    TilesConfigurer tilesConfigurer = new TilesConfigurer();
-    tilesConfigurer.setDefinitions(
-        "/WEB-INF/tiles/tiles-admin.xml",
-        "/WEB-INF/tiles/tiles-shop.xml");
-    tilesConfigurer.setCheckRefresh(true);
-    return tilesConfigurer;
-  }
+	/** Configure TilesConfigurer. */
+	@Bean
+	public TilesConfigurer tilesConfigurer() {
+		TilesConfigurer tilesConfigurer = new TilesConfigurer();
+		tilesConfigurer.setDefinitions("/WEB-INF/tiles/tiles-admin.xml", "/WEB-INF/tiles/tiles-shop.xml");
+		tilesConfigurer.setCheckRefresh(true);
+		return tilesConfigurer;
+	}
 
-  /** Configure ViewResolvers to deliver preferred views. */
-  @Bean
-  public TilesViewResolver tilesViewResolver() {
-    final TilesViewResolver resolver = new TilesViewResolver();
-    resolver.setViewClass(TilesView.class);
-    resolver.setOrder(0);
-    return resolver;
-  }
+	/** Configure ViewResolvers to deliver preferred views. */
+	@Bean
+	public TilesViewResolver tilesViewResolver() {
+		final TilesViewResolver resolver = new TilesViewResolver();
+		resolver.setViewClass(TilesView.class);
+		resolver.setOrder(0);
+		return resolver;
+	}
 
-  @Bean
-  public DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver() {
-    return new DeviceHandlerMethodArgumentResolver();
-  }
+	@Bean
+	public DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver() {
+		return new DeviceHandlerMethodArgumentResolver();
+	}
 
-  @Override
-  public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-    argumentResolvers.add(deviceHandlerMethodArgumentResolver());
-    argumentResolvers.add(merchantStoreArgumentResolver);
-    argumentResolvers.add(languageArgumentResolver);
-  }
+	@Override
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+		argumentResolvers.add(deviceHandlerMethodArgumentResolver());
+		argumentResolvers.add(merchantStoreArgumentResolver);
+		argumentResolvers.add(languageArgumentResolver);
+	}
 
-  @Override
-  public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-    converters.add(new MappingJackson2HttpMessageConverter());
-  }
+	@Override
+	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+		converters.add(new MappingJackson2HttpMessageConverter());
+	}
 
-  @Override
-  public void addViewControllers(ViewControllerRegistry registry) {
-    registry.addViewController("/").setViewName("shop");
-  }
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+		registry.addViewController("/").setViewName("shop");
+	}
 
-  @Override
-  public void addInterceptors(InterceptorRegistry registry) {
-    // Changes the locale when a 'locale' request parameter is sent; e.g. /?locale=de
-    registry.addInterceptor(localeChangeInterceptor());
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		// Changes the locale when a 'locale' request parameter is sent; e.g.
+		// /?locale=de
+		registry.addInterceptor(localeChangeInterceptor());
 
-    registry
-        .addInterceptor(storeFilter())
-        // store web front filter
-        .addPathPatterns("/shop/**")
-        // customer section filter
-        .addPathPatterns("/customer/**");
+		registry.addInterceptor(storeFilter())
+				// store web front filter
+				.addPathPatterns("/shop/**")
+				// customer section filter
+				.addPathPatterns("/customer/**");
 
-    registry
-        .addInterceptor(corsFilter())
-        // public services cors filter
-        .addPathPatterns("/services/**")
-        // REST api
-        .addPathPatterns("/api/**");
+		registry.addInterceptor(corsFilter())
+				// public services cors filter
+				.addPathPatterns("/services/**")
+				// REST api
+				.addPathPatterns("/api/**");
 
-    // admin panel filter
-    registry.addInterceptor(adminFilter()).addPathPatterns("/admin/**");
-  }
+		// admin panel filter
+		registry.addInterceptor(adminFilter()).addPathPatterns("/admin/**");
+	}
 
-  @Override
-  public void configureViewResolvers(ViewResolverRegistry registry) {
-    InternalResourceViewResolver internalResourceViewResolver = new InternalResourceViewResolver();
-    internalResourceViewResolver.setPrefix("/WEB-INF/views/");
-    internalResourceViewResolver.setSuffix(".jsp");
-    registry.viewResolver(internalResourceViewResolver);
-  }
+	@Override
+	public void configureViewResolvers(ViewResolverRegistry registry) {
+		InternalResourceViewResolver internalResourceViewResolver = new InternalResourceViewResolver();
+		internalResourceViewResolver.setPrefix("/WEB-INF/views/");
+		internalResourceViewResolver.setSuffix(".jsp");
+		registry.viewResolver(internalResourceViewResolver);
+	}
 
-  @Bean
-  public ByteArrayHttpMessageConverter byteArrayHttpMessageConverter() {
-    List<MediaType> supportedMediaTypes = Arrays.asList(IMAGE_JPEG, IMAGE_GIF, IMAGE_PNG);
+	@Bean
+	public ByteArrayHttpMessageConverter byteArrayHttpMessageConverter() {
+		List<MediaType> supportedMediaTypes = Arrays.asList(IMAGE_JPEG, IMAGE_GIF, IMAGE_PNG);
 
-    ByteArrayHttpMessageConverter byteArrayHttpMessageConverter =
-        new ByteArrayHttpMessageConverter();
-    byteArrayHttpMessageConverter.setSupportedMediaTypes(supportedMediaTypes);
-    return byteArrayHttpMessageConverter;
-  }
+		ByteArrayHttpMessageConverter byteArrayHttpMessageConverter = new ByteArrayHttpMessageConverter();
+		byteArrayHttpMessageConverter.setSupportedMediaTypes(supportedMediaTypes);
+		return byteArrayHttpMessageConverter;
+	}
 
-  @Bean
-  public LocaleChangeInterceptor localeChangeInterceptor() {
-    return new LocaleChangeInterceptor();
-  }
+	@Bean
+	public LocaleChangeInterceptor localeChangeInterceptor() {
+		return new LocaleChangeInterceptor();
+	}
 
-  @Bean
-  public StoreFilter storeFilter() {
-    return new StoreFilter();
-  }
+	@Bean
+	public StoreFilter storeFilter() {
+		return new StoreFilter();
+	}
 
-  @Bean
-  public CorsFilter corsFilter() {
-    return new CorsFilter();
-  }
+	@Bean
+	public CorsFilter corsFilter() {
+		return new CorsFilter();
+	}
 
-  @Bean
-  public AdminFilter adminFilter() {
-    return new AdminFilter();
-  }
+	@Bean
+	public AdminFilter adminFilter() {
+		return new AdminFilter();
+	}
 
-  @Bean
-  public SessionLocaleResolver localeResolver() {
-    SessionLocaleResolver slr = new SessionLocaleResolver();
-    slr.setDefaultLocale(Locale.ENGLISH);
-    return slr;
-  }
+	@Bean
+	public SessionLocaleResolver localeResolver() {
+		SessionLocaleResolver slr = new SessionLocaleResolver();
+		slr.setDefaultLocale(Locale.CHINA);
+		return slr;
+	}
 
-  @Bean
-  public ReloadableResourceBundleMessageSource messageSource() {
-    ReloadableResourceBundleMessageSource messageSource =
-        new ReloadableResourceBundleMessageSource();
-    messageSource.setBasenames(
-        "classpath:bundles/shopizer",
-        "classpath:bundles/messages",
-        "classpath:bundles/shipping",
-        "classpath:bundles/payment");
+	@Bean
+	public ReloadableResourceBundleMessageSource messageSource() {
+		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+		messageSource.setBasenames("classpath:bundles/shopizer", "classpath:bundles/messages",
+				"classpath:bundles/shipping", "classpath:bundles/payment");
 
-    messageSource.setDefaultEncoding("UTF-8");
-    return messageSource;
-  }
+		messageSource.setDefaultEncoding("UTF-8");
+		return messageSource;
+	}
 
-  @Bean
-  public LabelUtils messages() {
-    return new LabelUtils();
-  }
+	@Bean
+	public LabelUtils messages() {
+		return new LabelUtils();
+	}
 
 }

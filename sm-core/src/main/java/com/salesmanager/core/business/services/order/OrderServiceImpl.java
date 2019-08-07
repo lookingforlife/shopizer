@@ -15,6 +15,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.salesmanager.core.business.constants.Constants;
 import com.salesmanager.core.business.exception.ServiceException;
@@ -63,33 +64,33 @@ public class OrderServiceImpl  extends SalesManagerEntityServiceImpl<Long, Order
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-    @Inject
+    @Autowired
     private InvoiceModule invoiceModule;
 
-    @Inject
+    @Autowired
     private ShippingService shippingService;
     
-    @Inject
+    @Autowired
     private PaymentService paymentService;
     
-    @Inject
+    @Autowired
     private ProductService productService;
 
-    @Inject
+    @Autowired
     private TaxService taxService;
     
-    @Inject
+    @Autowired
     private CustomerService customerService;
     
-    @Inject
+    @Autowired
     private TransactionService transactionService;
     
-    @Inject
+    @Autowired
     private OrderTotalService orderTotalService;
 
     private final OrderRepository orderRepository;
 
-    @Inject
+    @Autowired
     public OrderServiceImpl(OrderRepository orderRepository) {
         super(orderRepository);
         this.orderRepository = orderRepository;

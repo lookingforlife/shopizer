@@ -2,17 +2,19 @@ package com.salesmanager.shop.store.api.v1.references;
 
 import java.util.Arrays;
 import java.util.List;
-import javax.inject.Inject;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.salesmanager.core.business.services.reference.country.CountryService;
 import com.salesmanager.core.business.services.reference.language.LanguageService;
-import com.salesmanager.core.business.services.user.PermissionService;
 import com.salesmanager.core.model.merchant.MerchantStore;
 import com.salesmanager.core.model.reference.currency.Currency;
 import com.salesmanager.core.model.reference.language.Language;
@@ -37,71 +39,78 @@ import com.salesmanager.shop.utils.LanguageUtils;
 @RequestMapping("/api/v1")
 public class ReferencesApi {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ReferencesApi.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReferencesApi.class);
 
-  @Inject private LanguageService languageService;
+	@Autowired
+	private LanguageService languageService;
 
-  @Inject private CountryService countryService;
+	@Autowired
+	private CountryService countryService;
 
-  @Inject private StoreFacade storeFacade;
+	@Autowired
+	private StoreFacade storeFacade;
 
-  @Inject private LanguageUtils languageUtils;
+	@Autowired
+	private LanguageUtils languageUtils;
 
-  @Inject private LanguageFacade languageFacade;
+	@Autowired
+	private LanguageFacade languageFacade;
 
-  @Inject private CountryFacade countryFacade;
+	@Autowired
+	private CountryFacade countryFacade;
 
-  @Inject private ZoneFacade zoneFacade;
+	@Autowired
+	private ZoneFacade zoneFacade;
 
-  @Inject private CurrencyFacade currencyFacade;
+	@Autowired
+	private CurrencyFacade currencyFacade;
 
-  /**
-   * Search languages by language code private/languages returns everything
-   *
-   * @return
-   */
-  @GetMapping("/languages")
-  public List<Language> getLanguages() {
-    return languageFacade.getLanguages();
-  }
+	/**
+	 * Search languages by language code private/languages returns everything
+	 *
+	 * @return
+	 */
+	@GetMapping("/languages")
+	public List<Language> getLanguages() {
+		return languageFacade.getLanguages();
+	}
 
-  /**
-   * Returns a country with zones (provinces, states) supports language set in parameter
-   * ?lang=en|fr|ru...
-   *
-   * @param request
-   * @return
-   */
-  @GetMapping("/country")
-  public List<ReadableCountry> getCountry(HttpServletRequest request) {
-    MerchantStore merchantStore = storeFacade.getByCode(request);
-    Language lang = languageUtils.getRESTLanguage(request, merchantStore);
-    return countryFacade.getListCountryZones(lang, merchantStore);
-  }
+	/**
+	 * Returns a country with zones (provinces, states) supports language set in
+	 * parameter ?lang=en|fr|ru...
+	 *
+	 * @param request
+	 * @return
+	 */
+	@GetMapping("/country")
+	public List<ReadableCountry> getCountry(HttpServletRequest request) {
+		MerchantStore merchantStore = storeFacade.getByCode(request);
+		Language lang = languageUtils.getRESTLanguage(request, merchantStore);
+		return countryFacade.getListCountryZones(lang, merchantStore);
+	}
 
-  @GetMapping("/zones")
-  public List<ReadableZone> getZones(
-      @RequestParam("code") String code, HttpServletRequest request) {
-    MerchantStore merchantStore = storeFacade.getByCode(request);
-    Language lang = languageUtils.getRESTLanguage(request, merchantStore);
-    return zoneFacade.getZones(code, lang, merchantStore);
-  }
+	@GetMapping("/zones")
+	public List<ReadableZone> getZones(@RequestParam("code") String code, HttpServletRequest request) {
+		MerchantStore merchantStore = storeFacade.getByCode(request);
+		Language lang = languageUtils.getRESTLanguage(request, merchantStore);
+		return zoneFacade.getZones(code, lang, merchantStore);
+	}
 
-  /**
-   * Currency
-   *
-   * @return
-   */
-  @GetMapping("/currency")
-  public List<Currency> getCurrency() {
-    return currencyFacade.getList();
-  }
+	/**
+	 * Currency
+	 *
+	 * @return
+	 */
+	@GetMapping("/currency")
+	public List<Currency> getCurrency() {
+		return currencyFacade.getList();
+	}
 
-  @GetMapping("/measures")
-  public SizeReferences measures() {
-    SizeReferences sizeReferences = new SizeReferences();
-    sizeReferences.setMeasures(Arrays.asList(MeasureUnit.values()));
-    sizeReferences.setWeights(Arrays.asList(WeightUnit.values()));
-    return sizeReferences;
-  }
+	@GetMapping("/measures")
+	public SizeReferences measures() {
+		SizeReferences sizeReferences = new SizeReferences();
+		sizeReferences.setMeasures(Arrays.asList(MeasureUnit.values()));
+		sizeReferences.setWeights(Arrays.asList(WeightUnit.values()));
+		return sizeReferences;
+	}
 }

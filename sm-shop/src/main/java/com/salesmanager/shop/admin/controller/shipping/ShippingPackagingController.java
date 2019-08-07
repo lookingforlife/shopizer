@@ -34,10 +34,10 @@ public class ShippingPackagingController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ShippingPackagingController.class);
 	
 
-	@Inject
+	@Autowired
 	private ShippingService shippingService;
 	
-	@Inject
+	@Autowired
 	LabelUtils messages;
 	
 
@@ -86,7 +86,6 @@ public class ShippingPackagingController {
 	@PreAuthorize("hasRole('SHIPPING')")
 	@RequestMapping(value="/admin/shipping/saveShippingPackaging.html", method=RequestMethod.POST)
 	public String saveShippingPackaging(@ModelAttribute("configuration") ShippingConfiguration configuration, BindingResult result, Model model, HttpServletRequest request, HttpServletResponse response, Locale locale) throws Exception {
-
 
 		this.setMenu(model, request);
 		MerchantStore store = (MerchantStore)request.getAttribute(Constants.ADMIN_STORE);

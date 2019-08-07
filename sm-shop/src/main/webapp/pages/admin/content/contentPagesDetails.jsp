@@ -257,26 +257,13 @@
             </c:forEach>
                   
             <form:hidden path="id" />
-            
-			
-			
 				<div class="form-actions">
+               		<div class="pull-right">
 
-                  		<div class="pull-right">
-
-                  			<button type="submit" class="btn btn-success"><s:message code="button.label.submit" text="Submit"/></button>
-                  			
-
-                  		</div>
-
+               			<button type="submit" class="btn btn-success"><s:message code="button.label.submit" text="Submit"/></button>
+               		</div>
             	 </div>
-			
-			
 		  </form:form>
-				
-
-			
-
 		</div>
 	   </div>
 	</div>

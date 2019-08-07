@@ -2,15 +2,12 @@ package com.salesmanager.core.business.modules.order.total;
 
 import java.math.BigDecimal;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang.Validate;
-import org.drools.KnowledgeBase;
-import org.drools.runtime.StatelessKnowledgeSession;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.salesmanager.core.business.constants.Constants;
 import com.salesmanager.core.business.services.catalog.product.PricingService;
@@ -42,7 +39,7 @@ public class ManufacturerShippingCodeOrderTotalModuleImpl implements OrderTotalP
 	
 	//private KnowledgeBase kbase;//injected from xml file
 	
-	@Inject
+	@Autowired
 	KieContainer kieManufacturerBasedPricingContainer;
 	
 

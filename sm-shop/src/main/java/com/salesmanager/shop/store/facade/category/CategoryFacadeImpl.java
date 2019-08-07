@@ -11,11 +11,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
+
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
 import com.salesmanager.core.business.exception.ConversionException;
 import com.salesmanager.core.business.exception.ServiceException;
 import com.salesmanager.core.business.services.catalog.category.CategoryService;
@@ -40,293 +42,270 @@ import com.salesmanager.shop.store.controller.category.facade.CategoryFacade;
 @Service(value = "categoryFacade")
 public class CategoryFacadeImpl implements CategoryFacade {
 
-  @Inject private CategoryService categoryService;
+	@Autowired
+	private CategoryService categoryService;
 
-  @Inject private PersistableCategoryPopulator persistableCatagoryPopulator;
+	@Autowired
+	private PersistableCategoryPopulator persistableCatagoryPopulator;
 
-  @Inject private Mapper<Category, ReadableCategory> categoryReadableCategoryConverter;
-  
-  @Inject private ProductAttributeService productAttributeService;
+	@Autowired
+	private Mapper<Category, ReadableCategory> categoryReadableCategoryConverter;
 
-  private static final String FEATURED_CATEGORY = "featured";
+	@Autowired
+	private ProductAttributeService productAttributeService;
 
-  @Override
-  public List<ReadableCategory> getCategoryHierarchy(
-      MerchantStore store, int depth, Language language, String filter) {
-    List<Category> categories = getCategories(store, depth, language, filter);
+	private static final String FEATURED_CATEGORY = "featured";
 
-    List<ReadableCategory> readableCategories =
-        categories.stream()
-            .filter(Category::isVisible)
-            .map(cat -> categoryReadableCategoryConverter.convert(cat, store, language))
-            .collect(Collectors.toList());
+	@Override
+	public List<ReadableCategory> getCategoryHierarchy(MerchantStore store, int depth, Language language,
+			String filter) {
+		List<Category> categories = getCategories(store, depth, language, filter);
 
-    Map<Long, ReadableCategory> readableCategoryMap =
-        readableCategories.stream()
-            .collect(Collectors.toMap(ReadableCategory::getId, Function.identity()));
+		List<ReadableCategory> readableCategories = categories.stream().filter(Category::isVisible)
+				.map(cat -> categoryReadableCategoryConverter.convert(cat, store, language))
+				.collect(Collectors.toList());
 
-    readableCategories.stream()
-        .filter(ReadableCategory::isVisible)
-        .filter(cat -> Objects.nonNull(cat.getParent()))
-        .filter(cat -> readableCategoryMap.containsKey(cat.getParent().getId()))
-        .forEach(
-            readableCategory -> {
-              ReadableCategory parentCategory =
-                  readableCategoryMap.get(readableCategory.getParent().getId());
-              if (parentCategory != null) {
-                parentCategory.getChildren().add(readableCategory);
-              }
-            });
+		Map<Long, ReadableCategory> readableCategoryMap = readableCategories.stream()
+				.collect(Collectors.toMap(ReadableCategory::getId, Function.identity()));
 
-    return readableCategoryMap.values().stream()
-        .filter(cat -> cat.getDepth() == 0)
-        .sorted(Comparator.comparing(ReadableCategory::getSortOrder))
-        .collect(Collectors.toList());
-  }
-  
-  @Override
-  public boolean existByCode(MerchantStore store, String code) {
-    try {
-      Category c =  categoryService.getByCode(store, code);
-      return c!=null?true:false;
-    } catch (ServiceException e) {
-      throw new ServiceRuntimeException(e);
-    }
-  }
+		readableCategories.stream().filter(ReadableCategory::isVisible).filter(cat -> Objects.nonNull(cat.getParent()))
+				.filter(cat -> readableCategoryMap.containsKey(cat.getParent().getId())).forEach(readableCategory -> {
+					ReadableCategory parentCategory = readableCategoryMap.get(readableCategory.getParent().getId());
+					if (parentCategory != null) {
+						parentCategory.getChildren().add(readableCategory);
+					}
+				});
 
-  private List<Category> getCategories(
-      MerchantStore store, int depth, Language language, String filter) {
-    if (StringUtils.isNotBlank(filter) && FEATURED_CATEGORY.equals(filter)) {
-      return categoryService.getListByDepthFilterByFeatured(store, depth, language);
-    } else {
-      return categoryService.getListByDepth(store, depth, language);
-    }
-  }
+		return readableCategoryMap.values().stream().filter(cat -> cat.getDepth() == 0)
+				.sorted(Comparator.comparing(ReadableCategory::getSortOrder)).collect(Collectors.toList());
+	}
 
-  @Override
-  public PersistableCategory saveCategory(MerchantStore store, PersistableCategory category) {
-    try {
+	@Override
+	public boolean existByCode(MerchantStore store, String code) {
+		try {
+			Category c = categoryService.getByCode(store, code);
+			return c != null ? true : false;
+		} catch (ServiceException e) {
+			throw new ServiceRuntimeException(e);
+		}
+	}
 
-      Category target =
-          Optional.ofNullable(category.getId())
-              .filter(id -> id > 0)
-              .map(categoryService::getById)
-              .orElse(new Category());
+	private List<Category> getCategories(MerchantStore store, int depth, Language language, String filter) {
+		if (StringUtils.isNotBlank(filter) && FEATURED_CATEGORY.equals(filter)) {
+			return categoryService.getListByDepthFilterByFeatured(store, depth, language);
+		} else {
+			return categoryService.getListByDepth(store, depth, language);
+		}
+	}
 
-      Category dbCategory = populateCategory(store, category, target);
+	@Override
+	public PersistableCategory saveCategory(MerchantStore store, PersistableCategory category) {
+		try {
 
-      saveCategory(store, dbCategory, null);
+			Category target = Optional.ofNullable(category.getId()).filter(id -> id > 0).map(categoryService::getById)
+					.orElse(new Category());
 
-      // set category id
-      category.setId(dbCategory.getId());
-      return category;
-    } catch (ServiceException e) {
-      throw new ServiceRuntimeException("Error while updating category", e);
-    }
-  }
+			Category dbCategory = populateCategory(store, category, target);
 
-  private Category populateCategory(
-      MerchantStore store, PersistableCategory category, Category target) {
-    try {
-      return persistableCatagoryPopulator.populate(
-          category, target, store, store.getDefaultLanguage());
-    } catch (ConversionException e) {
-      throw new ServiceRuntimeException(e);
-    }
-  }
+			saveCategory(store, dbCategory, null);
 
-  private void saveCategory(MerchantStore store, Category category, Category parent)
-      throws ServiceException {
+			// set category id
+			category.setId(dbCategory.getId());
+			return category;
+		} catch (ServiceException e) {
+			throw new ServiceRuntimeException("Error while updating category", e);
+		}
+	}
 
-    /**
-     * c.children1
-     *
-     * <p>children1.children1 children1.children2
-     *
-     * <p>children1.children2.children1
-     */
+	private Category populateCategory(MerchantStore store, PersistableCategory category, Category target) {
+		try {
+			return persistableCatagoryPopulator.populate(category, target, store, store.getDefaultLanguage());
+		} catch (ConversionException e) {
+			throw new ServiceRuntimeException(e);
+		}
+	}
 
-    /** set lineage * */
-    if (parent != null) {
-      category.setParent(category);
+	private void saveCategory(MerchantStore store, Category category, Category parent) throws ServiceException {
 
-      String lineage = parent.getLineage();
-      int depth = parent.getDepth();
+		/**
+		 * c.children1
+		 *
+		 * <p>
+		 * children1.children1 children1.children2
+		 *
+		 * <p>
+		 * children1.children2.children1
+		 */
 
-      category.setDepth(depth + 1);
-      category.setLineage(
-          new StringBuilder().append(lineage).append(parent.getId()).append("/").toString());
-    }
+		/** set lineage * */
+		if (parent != null) {
+			category.setParent(category);
 
-    category.setMerchantStore(store);
+			String lineage = parent.getLineage();
+			int depth = parent.getDepth();
 
-    // remove children
-    List<Category> children = category.getCategories();
-    category.setCategories(null);
+			category.setDepth(depth + 1);
+			category.setLineage(new StringBuilder().append(lineage).append(parent.getId()).append("/").toString());
+		}
 
-    /** set parent * */
-    if (parent != null) {
-      category.setParent(parent);
-    }
+		category.setMerchantStore(store);
 
-    categoryService.saveOrUpdate(category);
+		// remove children
+		List<Category> children = category.getCategories();
+		category.setCategories(null);
 
-    if (!CollectionUtils.isEmpty(children)) {
-      parent = category;
-      for (Category sub : children) {
+		/** set parent * */
+		if (parent != null) {
+			category.setParent(parent);
+		}
 
-        saveCategory(store, sub, parent);
-      }
-    }
-  }
+		categoryService.saveOrUpdate(category);
 
-  @Override
-  public ReadableCategory getById(MerchantStore store, Long id, Language language) {
-    Category categoryModel = getCategoryById(id, language);
+		if (!CollectionUtils.isEmpty(children)) {
+			parent = category;
+			for (Category sub : children) {
 
-    StringBuilder lineage =
-        new StringBuilder().append(categoryModel.getLineage()).append(categoryModel.getId());
+				saveCategory(store, sub, parent);
+			}
+		}
+	}
 
-    // get children
-    ReadableCategory readableCategory =
-        categoryReadableCategoryConverter.convert(categoryModel, store, language);
+	@Override
+	public ReadableCategory getById(MerchantStore store, Long id, Language language) {
+		Category categoryModel = getCategoryById(id, language);
 
-    List<Category> children = getListByLineage(store, lineage.toString());
+		StringBuilder lineage = new StringBuilder().append(categoryModel.getLineage()).append(categoryModel.getId());
 
-    List<ReadableCategory> childrenCats =
-        children.stream()
-            .map(cat -> categoryReadableCategoryConverter.convert(cat, store, language))
-            .collect(Collectors.toList());
+		// get children
+		ReadableCategory readableCategory = categoryReadableCategoryConverter.convert(categoryModel, store, language);
 
-    addChildToParent(readableCategory, childrenCats);
-    return readableCategory;
-  }
+		List<Category> children = getListByLineage(store, lineage.toString());
 
-  private void addChildToParent(ReadableCategory readableCategory,
-      List<ReadableCategory> childrenCats) {
-    Map<Long, ReadableCategory> categoryMap =
-        childrenCats.stream()
-            .collect(Collectors.toMap(ReadableCategory::getId, Function.identity()));
-    categoryMap.put(readableCategory.getId(), readableCategory);
+		List<ReadableCategory> childrenCats = children.stream()
+				.map(cat -> categoryReadableCategoryConverter.convert(cat, store, language))
+				.collect(Collectors.toList());
 
-    // traverse map and add child to parent
-    for (ReadableCategory readable : childrenCats) {
+		addChildToParent(readableCategory, childrenCats);
+		return readableCategory;
+	}
 
-      if (readable.getParent() != null) {
+	private void addChildToParent(ReadableCategory readableCategory, List<ReadableCategory> childrenCats) {
+		Map<Long, ReadableCategory> categoryMap = childrenCats.stream()
+				.collect(Collectors.toMap(ReadableCategory::getId, Function.identity()));
+		categoryMap.put(readableCategory.getId(), readableCategory);
 
-        ReadableCategory rc = categoryMap.get(readable.getParent().getId());
-        rc.getChildren().add(readable);
-      }
-    }
-  }
+		// traverse map and add child to parent
+		for (ReadableCategory readable : childrenCats) {
 
-  private List<Category> getListByLineage(MerchantStore store, String lineage) {
-    try {
-      return categoryService.getListByLineage(store, lineage);
-    } catch (ServiceException e) {
-      throw new ServiceRuntimeException(
-          String.format("Error while getting root category %s", e.getMessage()), e);
-    }
-  }
+			if (readable.getParent() != null) {
 
-  private Category getCategoryById(Long id, Language language) {
-    return Optional.ofNullable(categoryService.getOneByLanguage(id, language))
-        .orElseThrow(() -> new ResourceNotFoundException("Category id not found"));
-  }
+				ReadableCategory rc = categoryMap.get(readable.getParent().getId());
+				rc.getChildren().add(readable);
+			}
+		}
+	}
 
-  @Override
-  public void deleteCategory(Category category) {
-    try {
-      categoryService.delete(category);
-    } catch (ServiceException e) {
-      throw new ServiceRuntimeException("Error while deleting category", e);
-    }
-  }
+	private List<Category> getListByLineage(MerchantStore store, String lineage) {
+		try {
+			return categoryService.getListByLineage(store, lineage);
+		} catch (ServiceException e) {
+			throw new ServiceRuntimeException(String.format("Error while getting root category %s", e.getMessage()), e);
+		}
+	}
 
-  @Override
-  public ReadableCategory getByCode(MerchantStore store, String code, Language language)
-      throws Exception {
+	private Category getCategoryById(Long id, Language language) {
+		return Optional.ofNullable(categoryService.getOneByLanguage(id, language))
+				.orElseThrow(() -> new ResourceNotFoundException("Category id not found"));
+	}
 
-    Validate.notNull(code, "category code must not be null");
-    ReadableCategoryPopulator categoryPopulator = new ReadableCategoryPopulator();
-    ReadableCategory readableCategory = new ReadableCategory();
+	@Override
+	public void deleteCategory(Category category) {
+		try {
+			categoryService.delete(category);
+		} catch (ServiceException e) {
+			throw new ServiceRuntimeException("Error while deleting category", e);
+		}
+	}
 
-    Category category = categoryService.getByCode(store, code);
-    categoryPopulator.populate(category, readableCategory, store, language);
+	@Override
+	public ReadableCategory getByCode(MerchantStore store, String code, Language language) throws Exception {
 
-    return readableCategory;
-  }
+		Validate.notNull(code, "category code must not be null");
+		ReadableCategoryPopulator categoryPopulator = new ReadableCategoryPopulator();
+		ReadableCategory readableCategory = new ReadableCategory();
 
-  @Override
-  public void deleteCategory(Long categoryId) {
-    Category category = getOne(categoryId);
-    deleteCategory(category);
-  }
+		Category category = categoryService.getByCode(store, code);
+		categoryPopulator.populate(category, readableCategory, store, language);
 
-  private Category getOne(Long categoryId) {
-    return Optional.ofNullable(categoryService.getById(categoryId))
-        .orElseThrow(
-            () ->
-                new ResourceNotFoundException(
-                    String.format("No Category found for ID : %s", categoryId)));
-  }
+		return readableCategory;
+	}
 
-  @Override
-  public List<ReadableProductVariant> categoryProductVariants(Long categoryId, MerchantStore store,
-      Language language) {
-    Category category = categoryService.getById(categoryId);
-    
-    List<ReadableProductVariant> variants = new ArrayList<ReadableProductVariant>();
-    
-    if (category == null) {
-      throw new ResourceNotFoundException("Category [" + categoryId + "] not found");
-    }
-    
-    try {
-      List<ProductAttribute> attributes = productAttributeService.getProductAttributesByCategoryLineage(store, category.getLineage(), language);
-      
-      /**
-      Option NAME
-        OptionValueName
-        OptionValueName
-      **/
-      Map<String, List<ProductOptionValue>> rawFacet = new HashMap<String,List<ProductOptionValue>>();
-      Map<String, ProductOption> references = new HashMap<String,ProductOption>();
-      for(ProductAttribute attr : attributes) {
-        references.put(attr.getProductOption().getCode(), attr.getProductOption());
-        List<ProductOptionValue> values = rawFacet.get(attr.getProductOption().getCode());
-        if(values == null) {
-          values = new ArrayList<ProductOptionValue>();
-          rawFacet.put(attr.getProductOption().getCode(), values);
-        }
-        values.add(attr.getProductOptionValue());
-      }
+	@Override
+	public void deleteCategory(Long categoryId) {
+		Category category = getOne(categoryId);
+		deleteCategory(category);
+	}
 
-      //for each reference set Option
-      Iterator<Entry<String, ProductOption>> it = references.entrySet().iterator();
-      while (it.hasNext()) {
-        @SuppressWarnings("rawtypes")
-        Map.Entry pair = (Map.Entry)it.next();
-        ProductOption option = (ProductOption) pair.getValue();
-        List<ProductOptionValue> values = rawFacet.get(option.getCode());
+	private Category getOne(Long categoryId) {
+		return Optional.ofNullable(categoryService.getById(categoryId)).orElseThrow(
+				() -> new ResourceNotFoundException(String.format("No Category found for ID : %s", categoryId)));
+	}
 
-        ReadableProductVariant productVariant = new ReadableProductVariant();
-        productVariant.setName(option.getDescriptionsSettoList().get(0).getName());
-        List<ReadableProductVariantValue> optionValues = new ArrayList<ReadableProductVariantValue>();
-        for(ProductOptionValue value : values) {
-          ReadableProductVariantValue v = new ReadableProductVariantValue();
-          v.setName(value.getDescriptionsSettoList().get(0).getName());
-          v.setOption(option.getId());
-          v.setValue(value.getId());
-          optionValues.add(v);
-        }
-        productVariant.setOptions(optionValues);
-        variants.add(productVariant);
-      }
+	@Override
+	public List<ReadableProductVariant> categoryProductVariants(Long categoryId, MerchantStore store,
+			Language language) {
+		Category category = categoryService.getById(categoryId);
 
-      return variants;
-    } catch (Exception e) {
-      throw new ServiceRuntimeException("An error occured while retrieving ProductAttributes",e);
-    }
-  }
+		List<ReadableProductVariant> variants = new ArrayList<ReadableProductVariant>();
+
+		if (category == null) {
+			throw new ResourceNotFoundException("Category [" + categoryId + "] not found");
+		}
+
+		try {
+			List<ProductAttribute> attributes = productAttributeService.getProductAttributesByCategoryLineage(store,
+					category.getLineage(), language);
+
+			/**
+			 * Option NAME OptionValueName OptionValueName
+			 **/
+			Map<String, List<ProductOptionValue>> rawFacet = new HashMap<String, List<ProductOptionValue>>();
+			Map<String, ProductOption> references = new HashMap<String, ProductOption>();
+			for (ProductAttribute attr : attributes) {
+				references.put(attr.getProductOption().getCode(), attr.getProductOption());
+				List<ProductOptionValue> values = rawFacet.get(attr.getProductOption().getCode());
+				if (values == null) {
+					values = new ArrayList<ProductOptionValue>();
+					rawFacet.put(attr.getProductOption().getCode(), values);
+				}
+				values.add(attr.getProductOptionValue());
+			}
+
+			// for each reference set Option
+			Iterator<Entry<String, ProductOption>> it = references.entrySet().iterator();
+			while (it.hasNext()) {
+				@SuppressWarnings("rawtypes")
+				Map.Entry pair = (Map.Entry) it.next();
+				ProductOption option = (ProductOption) pair.getValue();
+				List<ProductOptionValue> values = rawFacet.get(option.getCode());
+
+				ReadableProductVariant productVariant = new ReadableProductVariant();
+				productVariant.setName(option.getDescriptionsSettoList().get(0).getName());
+				List<ReadableProductVariantValue> optionValues = new ArrayList<ReadableProductVariantValue>();
+				for (ProductOptionValue value : values) {
+					ReadableProductVariantValue v = new ReadableProductVariantValue();
+					v.setName(value.getDescriptionsSettoList().get(0).getName());
+					v.setOption(option.getId());
+					v.setValue(value.getId());
+					optionValues.add(v);
+				}
+				productVariant.setOptions(optionValues);
+				variants.add(productVariant);
+			}
+
+			return variants;
+		} catch (Exception e) {
+			throw new ServiceRuntimeException("An error occured while retrieving ProductAttributes", e);
+		}
+	}
 }

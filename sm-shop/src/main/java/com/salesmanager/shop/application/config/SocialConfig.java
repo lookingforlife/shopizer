@@ -1,10 +1,10 @@
 package com.salesmanager.shop.application.config;
 
-import com.salesmanager.core.constants.SchemaConstant;
-import javax.inject.Inject;
 import javax.sql.DataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,78 +27,78 @@ import org.springframework.social.security.AuthenticationNameUserIdSource;
 import org.springframework.social.security.SocialAuthenticationServiceLocator;
 import org.springframework.social.security.SocialAuthenticationServiceRegistry;
 
+import com.salesmanager.core.constants.SchemaConstant;
+
 @Configuration
 @EnableSocial
 public class SocialConfig implements SocialConfigurer {
 
-  private static final Log logger = LogFactory.getLog(SocialConfig.class);
+	private static final Log logger = LogFactory.getLog(SocialConfig.class);
 
-  @Inject private DataSource dataSource;
+	@Autowired
+	private DataSource dataSource;
 
-  @Inject private TextEncryptor textEncryptor;
+	@Autowired
+	private TextEncryptor textEncryptor;
 
-  @Value("${facebook.app.id}")
-  private String facebookAppId;
+	@Value("${facebook.app.id}")
+	private String facebookAppId;
 
-  @Value("${facebook.app.secret}")
-  private String facebookAppSecret;
+	@Value("${facebook.app.secret}")
+	private String facebookAppSecret;
 
-  @Bean
-  @Scope(value = "singleton", proxyMode = ScopedProxyMode.INTERFACES)
-  public SocialAuthenticationServiceLocator authenticationServiceLocator() {
+	@Bean
+	@Scope(value = "singleton", proxyMode = ScopedProxyMode.INTERFACES)
+	public SocialAuthenticationServiceLocator authenticationServiceLocator() {
 
-    try {
+		try {
 
-      logger.debug("Creating social authenticators");
+			logger.debug("Creating social authenticators");
 
-      SocialAuthenticationServiceRegistry registry = new SocialAuthenticationServiceRegistry();
-      registry.addAuthenticationService(
-          new FacebookAuthenticationService(facebookAppId, facebookAppSecret));
+			SocialAuthenticationServiceRegistry registry = new SocialAuthenticationServiceRegistry();
+			registry.addAuthenticationService(new FacebookAuthenticationService(facebookAppId, facebookAppSecret));
 
-      // registry.addConnectionFactory(new
-      // FacebookConnectionFactory(environment
-      // .getProperty("facebook.clientId"), environment
-      // .getProperty("facebook.clientSecret")));
+			// registry.addConnectionFactory(new
+			// FacebookConnectionFactory(environment
+			// .getProperty("facebook.clientId"), environment
+			// .getProperty("facebook.clientSecret")));
 
-      return registry;
+			return registry;
 
-    } catch (Exception e) {
-      logger.error("Eror while creating social authenticators");
-      return null;
-    }
-  }
+		} catch (Exception e) {
+			logger.error("Eror while creating social authenticators");
+			return null;
+		}
+	}
 
-  @Override
-  public void addConnectionFactories(
-      ConnectionFactoryConfigurer connectionFactoryConfigurer, Environment environment) {
-    connectionFactoryConfigurer.addConnectionFactory(
-        new FacebookConnectionFactory(facebookAppId, facebookAppSecret));
-  }
+	@Override
+	public void addConnectionFactories(ConnectionFactoryConfigurer connectionFactoryConfigurer,
+			Environment environment) {
+		connectionFactoryConfigurer
+				.addConnectionFactory(new FacebookConnectionFactory(facebookAppId, facebookAppSecret));
+	}
 
-  @Override
-  public UserIdSource getUserIdSource() {
-    return new AuthenticationNameUserIdSource();
-  }
+	@Override
+	public UserIdSource getUserIdSource() {
+		return new AuthenticationNameUserIdSource();
+	}
 
-  @Override
-  public UsersConnectionRepository getUsersConnectionRepository(
-      ConnectionFactoryLocator connectionFactoryLocator) {
-    return socialUsersConnectionRepository();
-  }
+	@Override
+	public UsersConnectionRepository getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator) {
+		return socialUsersConnectionRepository();
+	}
 
-  @Bean
-  public UsersConnectionRepository socialUsersConnectionRepository() {
-    JdbcUsersConnectionRepository conn =
-        new JdbcUsersConnectionRepository(
-            dataSource, authenticationServiceLocator(), textEncryptor);
-    conn.setTablePrefix(SchemaConstant.SALESMANAGER_SCHEMA + ".");
-    return conn;
-  }
+	@Bean
+	public UsersConnectionRepository socialUsersConnectionRepository() {
+		JdbcUsersConnectionRepository conn = new JdbcUsersConnectionRepository(dataSource,
+				authenticationServiceLocator(), textEncryptor);
+		conn.setTablePrefix(SchemaConstant.SALESMANAGER_SCHEMA + ".");
+		return conn;
+	}
 
-  @Bean
-  public ConnectController connectController(
-      ConnectionFactoryLocator connectionFactoryLocator,
-      ConnectionRepository connectionRepository) {
-    return new ConnectController(connectionFactoryLocator, connectionRepository);
-  }
+	@Bean
+	public ConnectController connectController(ConnectionFactoryLocator connectionFactoryLocator,
+			ConnectionRepository connectionRepository) {
+		return new ConnectController(connectionFactoryLocator, connectionRepository);
+	}
 }
